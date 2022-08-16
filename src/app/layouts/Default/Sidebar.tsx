@@ -32,7 +32,12 @@ const items2: MenuProps['items'] = [
 
 export default function DefaultLayoutSidebar() {
   return (
-    <Sider width={200} className='site-layout-background'>
+    <Sider
+      width={200}
+      className='site-layout-background'
+      breakpoint='lg'
+      collapsedWidth='0'
+    >
       <Menu
         mode='inline'
         defaultSelectedKeys={['1']}
