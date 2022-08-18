@@ -1,34 +1,74 @@
-import { Layout, Menu, MenuProps } from 'antd';
 import {
+  DiffOutlined,
+  FallOutlined,
+  HomeOutlined,
   LaptopOutlined,
-  NotificationOutlined,
+  PlusCircleOutlined,
+  RiseOutlined,
+  TableOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import React from 'react';
-
+import { Layout, Menu, MenuProps } from 'antd';
 const { Sider } = Layout;
 
-const items2: MenuProps['items'] = [
-  UserOutlined,
-  LaptopOutlined,
-  NotificationOutlined,
-].map((icon, index) => {
-  const key = String(index + 1);
-
-  return {
-    key: `sub${key}`,
-    icon: React.createElement(icon),
-    label: `subnav ${key}`,
-
-    children: new Array(4).fill(null).map((_, j) => {
-      const subKey = index * 4 + j + 1;
-      return {
-        key: subKey,
-        label: `option${subKey}`,
-      };
-    }),
-  };
-});
+const items: MenuProps['items'] = [
+  {
+    label: 'Home',
+    key: 'home',
+    icon: <HomeOutlined />,
+  },
+  {
+    label: 'Usuários',
+    key: 'userSubmenu',
+    icon: <UserOutlined />,
+    children: [
+      {
+        label: 'Consulta',
+        key: 'userConsultation',
+        icon: <TableOutlined />,
+      },
+      {
+        label: 'Cadastro',
+        key: 'userRegistration',
+        icon: <PlusCircleOutlined />,
+      },
+    ],
+  },
+  {
+    label: 'Pagamentos',
+    key: 'PaymentSubmenu',
+    icon: <LaptopOutlined />,
+    children: [
+      {
+        label: 'Consulta',
+        key: 'PaymentConsultation',
+        icon: <TableOutlined />,
+      },
+      {
+        label: 'Cadastro',
+        key: 'PaymentRegistration',
+        icon: <PlusCircleOutlined />,
+      },
+    ],
+  },
+  {
+    label: 'Fluxo de caixa',
+    key: 'Cashflow',
+    icon: <DiffOutlined />,
+    children: [
+      {
+        label: 'Despesas',
+        key: 'expenses',
+        icon: <FallOutlined />,
+      },
+      {
+        label: 'Receitas',
+        key: 'revenues',
+        icon: <RiseOutlined />,
+      },
+    ],
+  },
+];
 
 export default function DefaultLayoutSidebar() {
   return (
@@ -43,7 +83,7 @@ export default function DefaultLayoutSidebar() {
         defaultSelectedKeys={['1']}
         defaultOpenKeys={['sub1']}
         style={{ height: '100%', borderRight: 0 }}
-        items={items2}
+        items={items}
       />
     </Sider>
   );
