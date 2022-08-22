@@ -9,7 +9,7 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, MenuProps } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 const { Sider } = Layout;
 
 const items: MenuProps['items'] = [
@@ -20,7 +20,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: 'Usuários',
-    key: 'userSubmenu',
+    key: 'users',
     icon: <UserOutlined />,
     children: [
       {
@@ -37,7 +37,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: 'Pagamentos',
-    key: 'PaymentSubmenu',
+    key: 'payments',
     icon: <LaptopOutlined />,
     children: [
       {
@@ -56,7 +56,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: 'Fluxo de caixa',
-    key: '/cashflow',
+    key: 'cash-flow',
     icon: <DiffOutlined />,
     children: [
       {
@@ -78,6 +78,8 @@ const items: MenuProps['items'] = [
 ];
 
 export default function DefaultLayoutSidebar() {
+  const location = useLocation();
+
   return (
     <Sider
       width={200}
@@ -87,8 +89,8 @@ export default function DefaultLayoutSidebar() {
     >
       <Menu
         mode='inline'
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
+        defaultSelectedKeys={[location.pathname]}
+        defaultOpenKeys={[location.pathname.split('/')[1]]}
         style={{ height: '100%', borderRight: 0 }}
         items={items}
       />
