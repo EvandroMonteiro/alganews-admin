@@ -9,12 +9,13 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, MenuProps } from 'antd';
+import { Link } from 'react-router-dom';
 const { Sider } = Layout;
 
 const items: MenuProps['items'] = [
   {
-    label: 'Home',
-    key: 'home',
+    label: <Link to={'/'}>Home</Link>,
+    key: '/',
     icon: <HomeOutlined />,
   },
   {
@@ -23,13 +24,13 @@ const items: MenuProps['items'] = [
     icon: <UserOutlined />,
     children: [
       {
-        label: 'Consulta',
-        key: 'userConsultation',
+        label: <Link to={'/users'}>Consulta</Link>,
+        key: '/users',
         icon: <TableOutlined />,
       },
       {
-        label: 'Cadastro',
-        key: 'userRegistration',
+        label: <Link to={'/users/create'}>Cadastro</Link>,
+        key: '/users/create',
         icon: <PlusCircleOutlined />,
       },
     ],
@@ -40,30 +41,36 @@ const items: MenuProps['items'] = [
     icon: <LaptopOutlined />,
     children: [
       {
-        label: 'Consulta',
-        key: 'PaymentConsultation',
+        label: <Link to={'/payments'}>Consulta</Link>,
+        key: '/payments',
         icon: <TableOutlined />,
       },
       {
-        label: 'Cadastro',
-        key: 'PaymentRegistration',
+        label: (
+          <Link to={'/payments/create'}>Consulta</Link>
+        ),
+        key: '/payments/create',
         icon: <PlusCircleOutlined />,
       },
     ],
   },
   {
     label: 'Fluxo de caixa',
-    key: 'Cashflow',
+    key: '/cashflow',
     icon: <DiffOutlined />,
     children: [
       {
-        label: 'Despesas',
-        key: 'expenses',
+        label: (
+          <Link to={'/cash-flow/expenses'}>Despesas</Link>
+        ),
+        key: '/cash-flow/expenses',
         icon: <FallOutlined />,
       },
       {
-        label: 'Receitas',
-        key: 'revenues',
+        label: (
+          <Link to={'/cash-flow/revenues'}>Receitas</Link>
+        ),
+        key: '/cash-flow/revenues',
         icon: <RiseOutlined />,
       },
     ],

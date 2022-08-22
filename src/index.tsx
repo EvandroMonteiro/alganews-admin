@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { store } from './core/store';
 import DefaultLayout from './app/layouts/Default/Default.layout';
 import AlgaNewsRoutes from './app/routes';
+import { BrowserRouter } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -15,9 +16,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <DefaultLayout>
-        <AlgaNewsRoutes />
-      </DefaultLayout>
+      <BrowserRouter>
+        <DefaultLayout>
+          <AlgaNewsRoutes />
+        </DefaultLayout>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );
