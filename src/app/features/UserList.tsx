@@ -1,6 +1,8 @@
 import {
   Avatar,
   Button,
+  Card,
+  Input,
   Space,
   Switch,
   Table,
@@ -14,7 +16,9 @@ import useUsers from '../../core/hooks/useUsers';
 import {
   EyeOutlined,
   EditOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
+import { ColumnProps } from 'antd/lib/table';
 
 export default function UserList() {
   const { users, fetchUsers, toggleUserStatus } =
@@ -23,6 +27,63 @@ export default function UserList() {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  const getColumnSearchProps = (
+    dataIndex: keyof User.Summary,
+    displayName?: string
+  ): ColumnProps<User.Summary> => ({
+    filterDropdown: ({
+      selectedKeys,
+      setSelectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <Card>
+        <Input
+          style={{ marginBottom: 8, display: 'block' }}
+          value={selectedKeys[0]}
+          placeholder={`Buscar ${displayName || dataIndex}`}
+          onChange={(e) => {
+            setSelectedKeys(
+              e.target.value ? [e.target.value] : []
+            );
+          }}
+          onPressEnter={() => confirm()}
+        />
+        <Space>
+          <Button
+            type={'primary'}
+            size={'small'}
+            style={{ width: 90 }}
+            onClick={() => confirm()}
+            icon={<SearchOutlined />}
+          >
+            Buscar
+          </Button>
+          <Button
+            onClick={clearFilters}
+            size={'small'}
+            style={{ width: 90 }}
+          >
+            Limpar
+          </Button>
+        </Space>
+      </Card>
+    ),
+    filterIcon: (filtered: boolean) => (
+      <SearchOutlined
+        style={{ color: filtered ? '#0099ff' : undefined }}
+      />
+    ),
+    // @ts-ignore
+    onFilter: (value, record) =>
+      record[dataIndex]
+        ? record[dataIndex]
+            .toString()
+            .toLowerCase()
+            .includes((value as string).toLowerCase())
+        : '',
+  });
 
   return (
     <>
@@ -33,6 +94,7 @@ export default function UserList() {
             dataIndex: 'name',
             title: 'Nome',
             width: 200,
+            ...getColumnSearchProps('name', 'Nome'),
             render(name: string, row) {
               return (
                 <Space>
@@ -54,6 +116,7 @@ export default function UserList() {
             title: 'E-mail',
             ellipsis: true,
             width: 200,
+            ...getColumnSearchProps('email', 'E-mail'),
           },
           {
             dataIndex: 'role',
