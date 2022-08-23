@@ -1,14 +1,14 @@
-import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
-import 'antd/dist/antd.css';
-import './index.css';
-
 import React from 'react';
+import ReactDOM from 'react-dom/client';
+
 import { Provider } from 'react-redux';
-import { store } from './core/store';
+import { BrowserRouter } from 'react-router-dom';
 import DefaultLayout from './app/layouts/Default/Default.layout';
 import AlgaNewsRoutes from './app/routes';
-import { BrowserRouter } from 'react-router-dom';
+import { store } from './core/store';
+import reportWebVitals from './reportWebVitals';
+
+import './index.less';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
