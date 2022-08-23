@@ -1,3 +1,4 @@
+import { User } from 'goodvandro-alganews-sdk';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
@@ -17,9 +18,17 @@ export default function useUsers() {
     dispatch(UserActions.getAllUsers());
   }, [dispatch]);
 
+  const toggleUserStatus = useCallback(
+    (user: User.Detailed | User.Summary) => {
+      dispatch(UserActions.toggleUserStatus(user));
+    },
+    [dispatch]
+  );
+
   return {
     fetchUsers,
     users,
     fetching,
+    toggleUserStatus,
   };
 }
