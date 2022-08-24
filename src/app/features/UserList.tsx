@@ -1,4 +1,9 @@
 import {
+  EditOutlined,
+  EyeOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
+import {
   Avatar,
   Button,
   Card,
@@ -7,18 +12,12 @@ import {
   Switch,
   Table,
   Tag,
-  Typography,
 } from 'antd';
+import { ColumnProps } from 'antd/lib/table';
 import { format } from 'date-fns';
 import { User } from 'goodvandro-alganews-sdk';
 import { useEffect } from 'react';
 import useUsers from '../../core/hooks/useUsers';
-import {
-  EyeOutlined,
-  EditOutlined,
-  SearchOutlined,
-} from '@ant-design/icons';
-import { ColumnProps } from 'antd/lib/table';
 
 export default function UserList() {
   const { users, fetchUsers, toggleUserStatus, fetching } =
@@ -93,38 +92,41 @@ export default function UserList() {
         pagination={false}
         columns={[
           {
-            dataIndex: 'name',
-            title: 'Nome',
-            width: 200,
-            ...getColumnSearchProps('name', 'Nome'),
-            render(name: string, row) {
+            dataIndex: 'avatarUrls',
+            title: '',
+            width: 48,
+            fixed: 'left',
+            render(avatarUrls: User.Summary['avatarUrls']) {
               return (
-                <Space>
-                  <Avatar
-                    size='small'
-                    src={row.avatarUrls.small}
-                  />
-                  <Typography.Text
-                    style={{ maxWidth: '100%' }}
-                  >
-                    {name}
-                  </Typography.Text>
-                </Space>
+                <Avatar
+                  size={'small'}
+                  src={avatarUrls.small}
+                />
               );
             },
           },
           {
-            dataIndex: 'email',
-            title: 'E-mail',
+            dataIndex: 'name',
+            title: 'Nome',
+            width: 160,
+            ...getColumnSearchProps('name', 'Nome'),
             ellipsis: true,
-            width: 200,
+          },
+          {
+            dataIndex: 'email',
+            key: 'email',
+            title: 'E-mail',
+            responsive: ['md'],
+            ellipsis: true,
+            width: 240,
             ...getColumnSearchProps('email', 'E-mail'),
           },
           {
             dataIndex: 'role',
             title: 'Perfil',
             align: 'center',
-            render(role) {
+            width: 100,
+            render(role: string) {
               return (
                 <Tag
                   color={
@@ -144,6 +146,8 @@ export default function UserList() {
             dataIndex: 'createdAt',
             title: 'Criação',
             align: 'center',
+            width: 120,
+            responsive: ['lg'],
             render(createdAt: string) {
               return format(
                 new Date(createdAt),
@@ -155,6 +159,7 @@ export default function UserList() {
             dataIndex: 'active',
             title: 'Ativo',
             align: 'center',
+            width: 100,
             render(active: boolean, user) {
               return (
                 <Switch
@@ -170,6 +175,7 @@ export default function UserList() {
             dataIndex: 'id',
             title: 'Ações',
             align: 'center',
+            width: 100,
             render() {
               return (
                 <>
