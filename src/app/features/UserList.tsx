@@ -21,7 +21,7 @@ import {
 import { ColumnProps } from 'antd/lib/table';
 
 export default function UserList() {
-  const { users, fetchUsers, toggleUserStatus } =
+  const { users, fetchUsers, toggleUserStatus, fetching } =
     useUsers();
 
   useEffect(() => {
@@ -88,7 +88,9 @@ export default function UserList() {
   return (
     <>
       <Table<User.Summary>
+        loading={fetching}
         dataSource={users}
+        pagination={false}
         columns={[
           {
             dataIndex: 'name',
