@@ -91,6 +91,7 @@ export default function UserList() {
         loading={fetching}
         dataSource={users}
         pagination={false}
+        rowKey={'id'}
         columns={[
           {
             title: 'Usuários',
