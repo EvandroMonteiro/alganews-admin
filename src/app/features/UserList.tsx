@@ -7,6 +7,7 @@ import {
   Avatar,
   Button,
   Card,
+  Descriptions,
   Input,
   Space,
   Switch,
@@ -92,10 +93,64 @@ export default function UserList() {
         pagination={false}
         columns={[
           {
+            title: 'Usuários',
+            responsive: ['xs'],
+            render(user: User.Summary) {
+              return (
+                <Descriptions column={1} size={'small'}>
+                  <Descriptions.Item label={'Nome'}>
+                    {user.name}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'E-mail'}>
+                    {user.email}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Criação'}>
+                    {format(
+                      new Date(user.createdAt),
+                      'dd/MM/yyyy'
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Perfil'}>
+                    {
+                      <Tag
+                        color={
+                          user.role === 'MANAGER'
+                            ? 'red'
+                            : 'blue'
+                        }
+                      >
+                        {user.role === 'EDITOR'
+                          ? 'Editor'
+                          : user.role === 'MANAGER'
+                          ? 'Gestor'
+                          : 'Assistente'}
+                      </Tag>
+                    }
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Ações'}>
+                    {
+                      <>
+                        <Button
+                          size='small'
+                          icon={<EyeOutlined />}
+                        />
+                        <Button
+                          size='small'
+                          icon={<EditOutlined />}
+                        />
+                      </>
+                    }
+                  </Descriptions.Item>
+                </Descriptions>
+              );
+            },
+          },
+          {
             dataIndex: 'avatarUrls',
             title: '',
             width: 48,
             fixed: 'left',
+            responsive: ['sm'],
             render(avatarUrls: User.Summary['avatarUrls']) {
               return (
                 <Avatar
@@ -111,6 +166,7 @@ export default function UserList() {
             width: 160,
             ...getColumnSearchProps('name', 'Nome'),
             ellipsis: true,
+            responsive: ['sm'],
           },
           {
             dataIndex: 'email',
@@ -126,6 +182,7 @@ export default function UserList() {
             title: 'Perfil',
             align: 'center',
             width: 100,
+            responsive: ['sm'],
             render(role: string) {
               return (
                 <Tag
@@ -160,6 +217,7 @@ export default function UserList() {
             title: 'Ativo',
             align: 'center',
             width: 100,
+            responsive: ['sm'],
             render(active: boolean, user) {
               return (
                 <Switch
@@ -176,6 +234,7 @@ export default function UserList() {
             title: 'Ações',
             align: 'center',
             width: 100,
+            responsive: ['sm'],
             render() {
               return (
                 <>
