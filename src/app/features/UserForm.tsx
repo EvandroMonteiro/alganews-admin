@@ -25,6 +25,7 @@ import React, {
 import { UserOutlined } from '@ant-design/icons';
 import ImageCrop from 'antd-img-crop';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
+import MaskedInput from 'antd-mask-input';
 
 const { TabPane } = Tabs;
 
@@ -52,6 +53,7 @@ export default function UserForm() {
   return (
     <Form
       form={form}
+      autoComplete={'off'}
       layout={'vertical'}
       onFinishFailed={(fields) => {
         let bankAccountErrors = 0;
@@ -355,8 +357,17 @@ export default function UserForm() {
                       },
                     ]}
                   >
-                    <Input
+                    <MaskedInput
+                      mask='(00) 00000-0000'
                       placeholder={'(27) 99999-0000'}
+                      onChange={(event) => {
+                        form.setFieldsValue({
+                          phone: event.target.value.replace(
+                            /\D/g,
+                            ''
+                          ),
+                        });
+                      }}
                     />
                   </Form.Item>
                 </Col>
@@ -375,7 +386,19 @@ export default function UserForm() {
                       },
                     ]}
                   >
-                    <Input placeholder={'111.222.333-44'} />
+                    <MaskedInput
+                      mask='000.000.000-00'
+                      placeholder={'111.222.333-44'}
+                      onChange={(event) => {
+                        form.setFieldsValue({
+                          taxpayerId:
+                            event.target.value.replace(
+                              /\D/g,
+                              ''
+                            ),
+                        });
+                      }}
+                    />
                   </Form.Item>
                 </Col>
                 <Col lg={8}>
@@ -432,6 +455,30 @@ export default function UserForm() {
                               {
                                 required: true,
                                 message: '',
+                              },
+                              {
+                                async validator(
+                                  field,
+                                  value
+                                ) {
+                                  if (
+                                    isNaN(Number(value))
+                                  ) {
+                                    throw new Error(
+                                      'Apenas números'
+                                    );
+                                  }
+                                  if (Number(value) > 100) {
+                                    throw new Error(
+                                      'Máximo é 100'
+                                    );
+                                  }
+                                  if (Number(value) < 0) {
+                                    throw new Error(
+                                      'Mínimo é 0'
+                                    );
+                                  }
+                                },
                               },
                             ]}
                           >
