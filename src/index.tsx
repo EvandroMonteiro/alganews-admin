@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import DefaultLayout from './app/layouts/Default/Default.layout';
-import AlgaNewsRoutes from './app/routes';
+import AppRoutes from './app/routes';
 import { store } from './core/store';
 import reportWebVitals from './reportWebVitals';
 
@@ -18,7 +18,7 @@ root.render(
     <Provider store={store}>
       <BrowserRouter>
         <DefaultLayout>
-          <AlgaNewsRoutes />
+          <AppRoutes />
         </DefaultLayout>
       </BrowserRouter>
     </Provider>

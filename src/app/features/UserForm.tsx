@@ -94,6 +94,7 @@ export default function UserForm() {
             description: 'Usuário cadastrado com sucesso',
           });
         } catch (error) {
+          console.log(error);
           if (error instanceof CustomError) {
             if (error.data?.objects) {
               form.setFields(
@@ -117,6 +118,14 @@ export default function UserForm() {
                   };
                 })
               );
+            } else {
+              notification.error({
+                message: error.message,
+                description:
+                  error.data?.detail === 'Network Error'
+                    ? 'Erro de rede'
+                    : error.data?.detail,
+              });
             }
           } else {
             notification.error({
