@@ -5,7 +5,6 @@ import {
   isPending,
   isRejected,
 } from '@reduxjs/toolkit';
-import { notification } from 'antd';
 import { User, UserService } from 'goodvandro-alganews-sdk';
 
 interface UserState {
@@ -51,9 +50,6 @@ export default createReducer(initialState, (builder) => {
     })
     .addMatcher(error, (state, action) => {
       state.fetching = false;
-      notification.error({
-        message: action.error.message,
-      });
     })
     .addMatcher(loading, (state) => {
       state.fetching = true;
