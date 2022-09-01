@@ -13,11 +13,13 @@ import {
   Switch,
   Table,
   Tag,
+  Tooltip,
 } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import { format } from 'date-fns';
 import { User } from 'goodvandro-alganews-sdk';
 import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import useUsers from '../../core/hooks/useUsers';
 
 export default function UserList() {
@@ -245,17 +247,29 @@ export default function UserList() {
             align: 'center',
             width: 100,
             responsive: ['sm'],
-            render() {
+            render(id: number) {
               return (
                 <>
-                  <Button
-                    size='small'
-                    icon={<EyeOutlined />}
-                  />
-                  <Button
-                    size='small'
-                    icon={<EditOutlined />}
-                  />
+                  <Tooltip
+                    title={'Visualizar utilizador'}
+                    placement={'left'}
+                  >
+                    <Button
+                      size='small'
+                      icon={<EyeOutlined />}
+                    />
+                  </Tooltip>
+                  <Tooltip
+                    title={'Editar utilizador'}
+                    placement={'right'}
+                  >
+                    <Link to={`/users/edit/${id}`}>
+                      <Button
+                        size='small'
+                        icon={<EditOutlined />}
+                      />
+                    </Link>
+                  </Tooltip>
                 </>
               );
             },
