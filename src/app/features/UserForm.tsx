@@ -26,10 +26,24 @@ import { UserOutlined } from '@ant-design/icons';
 import ImageCrop from 'antd-img-crop';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
 import MaskedInput from 'antd-mask-input';
+import { Moment } from 'moment';
 
 const { TabPane } = Tabs;
 
-export default function UserForm() {
+type UserFormType = {
+  createdAt: Moment;
+  updatedAt: Moment;
+  birthdate: Moment;
+} & Omit<
+  User.Detailed,
+  'createdAt' | 'updatedAt' | 'birthdate'
+>;
+
+interface UserFormProps {
+  user?: UserFormType;
+}
+
+export default function UserForm(props: UserFormProps) {
   const [form] = Form.useForm<User.Input>();
   const [avatar, setAvatar] = useState('');
   const [activeTab, setActiveTab] = useState<
@@ -134,6 +148,7 @@ export default function UserForm() {
           }
         }
       }}
+      initialValues={props.user}
     >
       <Row gutter={24} align={'middle'}>
         <Col lg={4}>

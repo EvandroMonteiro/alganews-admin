@@ -8,6 +8,7 @@ import HomeView from './views/Home.view';
 import PaymentCreateView from './views/PaymentCreate.view';
 import PaymentListView from './views/PaymentList.view';
 import UserCreateView from './views/UserCreate.view';
+import UserEditView from './views/UserEditView';
 import UserListView from './views/UserList.view';
 
 export default function AppRoutes() {
@@ -46,6 +47,10 @@ export default function AppRoutes() {
       <Route
         path={'/users/create'}
         element={<UserCreateView />}
+      />
+      <Route
+        path={'/users/edit/:id'}
+        element={<UserEditView />}
       />
       <Route
         path={'/payments'}
