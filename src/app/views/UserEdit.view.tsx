@@ -1,16 +1,20 @@
-import { notification, Skeleton } from 'antd';
+import { Card, notification, Skeleton } from 'antd';
 import { User, UserService } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useCallback, useEffect } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 import useUser from '../../core/hooks/useUser';
 import UserForm from '../features/UserForm';
 
 export default function UserEditView() {
-  const { user, fetchUser } = useUser();
+  const params = useParams<{ id: string }>();
+
+  const { user, fetchUser, notFound } = useUser();
 
   useEffect(() => {
-    fetchUser(1);
-  }, [fetchUser]);
+    if (!isNaN(Number(params.id)))
+      fetchUser(Number(params.id));
+  }, [fetchUser, params.id]);
 
   const transformUserData = useCallback(
     (user: User.Detailed) => {
@@ -24,8 +28,17 @@ export default function UserEditView() {
     []
   );
 
+  if (isNaN(Number(params.id)))
+    return <Navigate to='/users' replace={true} />;
+
+  if (notFound)
+    return <Card>Utilizador não encontrado</Card>;
+
   function handleUserUpdate(user: User.Input) {
-    UserService.updateExistingUser(1, user).then(() => {
+    UserService.updateExistingUser(
+      Number(params.id),
+      user
+    ).then(() => {
       notification.success({
         message: 'Usuário atualizado com sucesso',
       });
