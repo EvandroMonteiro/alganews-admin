@@ -254,10 +254,12 @@ export default function UserList() {
                     title={'Visualizar utilizador'}
                     placement={'left'}
                   >
-                    <Button
-                      size='small'
-                      icon={<EyeOutlined />}
-                    />
+                    <Link to={`/users/${id}`}>
+                      <Button
+                        size='small'
+                        icon={<EyeOutlined />}
+                      />
+                    </Link>
                   </Tooltip>
                   <Tooltip
                     title={'Editar utilizador'}
