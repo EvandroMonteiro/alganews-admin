@@ -26,11 +26,14 @@ import {
   Navigate,
   useParams,
 } from 'react-router-dom';
+import usePageTitle from '../../core/hooks/usePageTitle';
 import usePosts from '../../core/hooks/usePosts';
 import useUser from '../../core/hooks/useUser';
 import NotFoundError from '../components/NotFoundError';
 
 export default function UserDetailsView() {
+  usePageTitle('Detalhes do utilizador');
+
   const params = useParams<{ id: string }>();
   const { lg } = useBreakpoint();
 
