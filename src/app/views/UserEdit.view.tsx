@@ -2,12 +2,17 @@ import { Card, notification, Skeleton } from 'antd';
 import { User, UserService } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useCallback, useEffect } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import useUser from '../../core/hooks/useUser';
 import UserForm from '../features/UserForm';
 
 export default function UserEditView() {
   const params = useParams<{ id: string }>();
+  const navigate = useNavigate();
 
   const { user, fetchUser, notFound } = useUser();
 
@@ -34,11 +39,12 @@ export default function UserEditView() {
   if (notFound)
     return <Card>Utilizador não encontrado</Card>;
 
-  function handleUserUpdate(user: User.Input) {
-    UserService.updateExistingUser(
+  async function handleUserUpdate(user: User.Input) {
+    await UserService.updateExistingUser(
       Number(params.id),
       user
     ).then(() => {
+      navigate('/users');
       notification.success({
         message: 'Usuário atualizado com sucesso',
       });
