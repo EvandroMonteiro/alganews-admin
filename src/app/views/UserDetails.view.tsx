@@ -1,3 +1,4 @@
+import { WarningFilled } from '@ant-design/icons';
 import {
   Button,
   Card,
@@ -9,16 +10,24 @@ import {
   Row,
   Skeleton,
   Space,
+  Switch,
+  Table,
+  Tooltip,
   Typography,
 } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import confirm from 'antd/lib/modal/confirm';
+import { Post } from 'goodvandro-alganews-sdk';
+import moment from 'moment';
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Navigate, useParams } from 'react-router-dom';
+import {
+  Link,
+  Navigate,
+  useParams,
+} from 'react-router-dom';
+import usePosts from '../../core/hooks/usePosts';
 import useUser from '../../core/hooks/useUser';
-import { WarningFilled } from '@ant-design/icons';
 
 export default function UserDetailsView() {
   const params = useParams<{ id: string }>();
@@ -27,10 +36,22 @@ export default function UserDetailsView() {
   const { user, fetchUser, notFound, toggleUserStatus } =
     useUser();
 
+  const {
+    fetchUserPosts,
+    posts,
+    togglePostStatus,
+    loadingFetch,
+    loadingToggle,
+  } = usePosts();
+
   useEffect(() => {
     if (!isNaN(Number(params.id)))
       fetchUser(Number(params.id));
   }, [fetchUser, params.id]);
+
+  useEffect(() => {
+    if (user?.role === 'EDITOR') fetchUserPosts(user.id);
+  }, [fetchUserPosts, user]);
 
   if (isNaN(Number(params.id)))
     return <Navigate to='/users' replace={true} />;
@@ -142,6 +163,96 @@ export default function UserDetailsView() {
             {user.phone}
           </Descriptions.Item>
         </Descriptions>
+      </Col>
+      <Divider />
+      <Col xs={24}>
+        <Table<Post.Summary>
+          dataSource={posts?.content}
+          rowKey={'id'}
+          loading={loadingFetch}
+          columns={[
+            {
+              responsive: ['xs'],
+              title: 'Posts',
+              render(element) {
+                return (
+                  <Descriptions column={1}>
+                    <Descriptions.Item label={'Título'}>
+                      {element.title}
+                    </Descriptions.Item>
+                    <Descriptions.Item label={'Criação'}>
+                      {moment(element.createdAt).format(
+                        'DD/MM/YYYY'
+                      )}
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                      label={'Atualização'}
+                    >
+                      {moment(element.updatedAt).format(
+                        'DD/MM/YYYY'
+                      )}
+                    </Descriptions.Item>
+                    <Descriptions.Item label={'Publicado'}>
+                      <Switch checked={element.published} />
+                    </Descriptions.Item>
+                  </Descriptions>
+                );
+              },
+            },
+            {
+              dataIndex: 'title',
+              title: 'Título',
+              ellipsis: true,
+              width: 300,
+              responsive: ['sm'],
+              render(title: string) {
+                return (
+                  <Tooltip title={title}>{title}</Tooltip>
+                );
+              },
+            },
+            {
+              dataIndex: 'createdAt',
+              title: 'Criação',
+              width: 180,
+              align: 'center',
+              responsive: ['sm'],
+              render: (item) =>
+                moment(item).format('DD/MM/YYYY'),
+            },
+            {
+              dataIndex: 'updatedAt',
+              title: 'Última atualização',
+              width: 200,
+              align: 'center',
+              responsive: ['sm'],
+              render: (item) =>
+                moment(item).format(
+                  'DD/MM/YYYY \\à\\s hh:mm'
+                ),
+            },
+            {
+              dataIndex: 'published',
+              title: 'Publicado',
+              align: 'center',
+              width: 120,
+              responsive: ['sm'],
+              render(published: boolean, post) {
+                return (
+                  <Switch
+                    checked={published}
+                    loading={loadingToggle}
+                    onChange={() => {
+                      togglePostStatus(post).then(() => {
+                        fetchUserPosts(user.id);
+                      });
+                    }}
+                  />
+                );
+              },
+            },
+          ]}
+        />
       </Col>
     </Row>
   );
