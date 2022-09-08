@@ -28,6 +28,7 @@ import {
 } from 'react-router-dom';
 import usePosts from '../../core/hooks/usePosts';
 import useUser from '../../core/hooks/useUser';
+import NotFoundError from '../components/NotFoundError';
 
 export default function UserDetailsView() {
   const params = useParams<{ id: string }>();
@@ -57,7 +58,15 @@ export default function UserDetailsView() {
     return <Navigate to='/users' replace={true} />;
 
   if (notFound)
-    return <Card>Utilizador não encontrado</Card>;
+    return (
+      <Card>
+        <NotFoundError
+          title={'Usuário não encontrado'}
+          actionDestination={'/usuarios'}
+          actionTitle={'Voltar para lista de usuários'}
+        />
+      </Card>
+    );
 
   if (!user) return <Skeleton />;
 

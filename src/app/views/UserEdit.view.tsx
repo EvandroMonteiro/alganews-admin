@@ -8,6 +8,7 @@ import {
   useParams,
 } from 'react-router-dom';
 import useUser from '../../core/hooks/useUser';
+import NotFoundError from '../components/NotFoundError';
 import UserForm from '../features/UserForm';
 
 export default function UserEditView() {
@@ -37,7 +38,15 @@ export default function UserEditView() {
     return <Navigate to='/users' replace={true} />;
 
   if (notFound)
-    return <Card>Utilizador não encontrado</Card>;
+    return (
+      <Card>
+        <NotFoundError
+          title={'Usuário não encontrado'}
+          actionDestination={'/usuarios'}
+          actionTitle={'Voltar para lista de usuários'}
+        />
+      </Card>
+    );
 
   async function handleUserUpdate(user: User.Input) {
     await UserService.updateExistingUser(
