@@ -59,6 +59,8 @@ export default function UserForm(props: UserFormProps) {
     'personal' | 'bankAccount'
   >('personal');
 
+  const [isEditorRole, setIsEditorRole] = useState(false);
+
   const handleAvatarUpload = useCallback(
     async (file: File) => {
       const avatarSource = await FileService.upload(file);
@@ -292,7 +294,12 @@ export default function UserForm(props: UserFormProps) {
               },
             ]}
           >
-            <Select placeholder={'Selecione um perfil'}>
+            <Select
+              onChange={(value) => {
+                setIsEditorRole(value === 'EDITOR');
+              }}
+              placeholder={'Selecione um perfil'}
+            >
               <Select.Option value={'EDITOR'}>
                 Editor
               </Select.Option>
@@ -445,105 +452,118 @@ export default function UserForm(props: UserFormProps) {
                     />
                   </Form.Item>
                 </Col>
-                <Col xs={24} lg={8}>
-                  <Form.Item
-                    label={'Preço por palavra'}
-                    name={'pricePerWord'}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'O campo é obrigatório',
-                      },
-                      {
-                        type: 'number',
-                        min: 0.01,
-                        message:
-                          'O valor mínimo é 1 centavo',
-                      },
-                    ]}
-                  >
-                    <CurrencyInput
-                      onChange={(e, value) => {
-                        form.setFieldsValue({
-                          pricePerWord: value,
-                        });
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-                {Array(3)
-                  .fill(null)
-                  .map((_, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <Col xs={18} lg={6}>
-                          <Form.Item
-                            label={'Habilidade'}
-                            name={['skills', index, 'name']}
-                            rules={[
-                              {
-                                required: true,
-                                message:
-                                  'O campo é obrigatório',
-                              },
-                              {
-                                max: 50,
-                                message: `A habilidade não pode ter mais de 50 caracteres`,
-                              },
-                            ]}
-                          >
-                            <Input
-                              placeholder={
-                                'E.g.: Javascript'
-                              }
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={6} lg={2}>
-                          <Form.Item
-                            label={'%'}
-                            name={[
-                              'skills',
-                              index,
-                              'percentage',
-                            ]}
-                            rules={[
-                              {
-                                required: true,
-                                message: '',
-                              },
-                              {
-                                async validator(
-                                  field,
-                                  value
-                                ) {
-                                  if (
-                                    isNaN(Number(value))
-                                  ) {
-                                    throw new Error(
-                                      'Apenas números'
-                                    );
+                {isEditorRole && (
+                  <>
+                    <Col xs={24} lg={8}>
+                      <Form.Item
+                        label={'Preço por palavra'}
+                        name={'pricePerWord'}
+                        rules={[
+                          {
+                            required: true,
+                            message:
+                              'O campo é obrigatório',
+                          },
+                          {
+                            type: 'number',
+                            min: 0.01,
+                            message:
+                              'O valor mínimo é 1 centavo',
+                          },
+                        ]}
+                      >
+                        <CurrencyInput
+                          onChange={(e, value) => {
+                            form.setFieldsValue({
+                              pricePerWord: value,
+                            });
+                          }}
+                        />
+                      </Form.Item>
+                    </Col>
+                    {Array(3)
+                      .fill(null)
+                      .map((_, index) => {
+                        return (
+                          <React.Fragment key={index}>
+                            <Col xs={18} lg={6}>
+                              <Form.Item
+                                label={'Habilidade'}
+                                name={[
+                                  'skills',
+                                  index,
+                                  'name',
+                                ]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message:
+                                      'O campo é obrigatório',
+                                  },
+                                  {
+                                    max: 50,
+                                    message: `A habilidade não pode ter mais de 50 caracteres`,
+                                  },
+                                ]}
+                              >
+                                <Input
+                                  placeholder={
+                                    'E.g.: Javascript'
                                   }
-                                  if (Number(value) > 100) {
-                                    throw new Error(
-                                      'Máximo é 100'
-                                    );
-                                  }
-                                  if (Number(value) < 0) {
-                                    throw new Error(
-                                      'Mínimo é 0'
-                                    );
-                                  }
-                                },
-                              },
-                            ]}
-                          >
-                            <Input placeholder={'0'} />
-                          </Form.Item>
-                        </Col>
-                      </React.Fragment>
-                    );
-                  })}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={6} lg={2}>
+                              <Form.Item
+                                label={'%'}
+                                name={[
+                                  'skills',
+                                  index,
+                                  'percentage',
+                                ]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: '',
+                                  },
+                                  {
+                                    async validator(
+                                      field,
+                                      value
+                                    ) {
+                                      if (
+                                        isNaN(Number(value))
+                                      ) {
+                                        throw new Error(
+                                          'Apenas números'
+                                        );
+                                      }
+                                      if (
+                                        Number(value) > 100
+                                      ) {
+                                        throw new Error(
+                                          'Máximo é 100'
+                                        );
+                                      }
+                                      if (
+                                        Number(value) < 0
+                                      ) {
+                                        throw new Error(
+                                          'Mínimo é 0'
+                                        );
+                                      }
+                                    },
+                                  },
+                                ]}
+                              >
+                                <Input placeholder={'0'} />
+                              </Form.Item>
+                            </Col>
+                          </React.Fragment>
+                        );
+                      })}
+                  </>
+                )}
               </Row>
             </TabPane>
 
