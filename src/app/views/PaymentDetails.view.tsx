@@ -8,33 +8,41 @@ import {
   Table,
 } from 'antd';
 import { Post } from 'goodvandro-alganews-sdk';
+import moment from 'moment';
+import { useEffect } from 'react';
+import usePayment from '../../core/hooks/usePayment';
+import PaymentHeader from '../features/PaymentHeader';
 
 export default function PaymentDetailsView() {
+  const {
+    fetchPayment,
+    fetchPosts,
+    fetchingPayment,
+    fetchingPosts,
+    posts,
+    payment,
+  } = usePayment();
+
+  useEffect(() => {
+    fetchPosts(1);
+    fetchPayment(1);
+  }, [fetchPosts, fetchPayment]);
+
   return (
     <>
       <Card>
-        <Typography.Title>Pagamentos</Typography.Title>
-        <Typography.Text>
-          A base do pagamento é calculada pela quantidade de palavras
-          escrevidas.
-        </Typography.Text>
-        <Divider />
-        <Descriptions column={2}>
-          <Descriptions.Item label={'Editor'}>EDITOR</Descriptions.Item>
-          <Descriptions.Item label={'Período'}>
-            <Space size={8}>
-              <Tag style={{ margin: 0 }}>20/12/2022</Tag>
-              <span>{'até'}</span>
-              <Tag>30/12/2022</Tag>
-            </Space>
-          </Descriptions.Item>
-          <Descriptions.Item label={'Ganhos por posts'}>
-            <Tag>{'R$ 12.345,67'}</Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label={'Total'}>
-            <Tag>{'R$ 12.345,67'}</Tag>
-          </Descriptions.Item>
-        </Descriptions>
+        <PaymentHeader
+          editorId={payment?.payee.id}
+          editorName={payment?.payee.name}
+          periodStart={moment(payment?.accountingPeriod.startsOn).format(
+            'DD/MM/YYYY'
+          )}
+          periodEnd={moment(payment?.accountingPeriod.endsOn).format(
+            'DD/MM/YYYY'
+          )}
+          postsEarnings={payment?.earnings.totalAmount}
+          totalEarnings={payment?.grandTotalAmount}
+        />
         <Divider />
         <Typography.Title level={2}>Bonus</Typography.Title>
         <Descriptions bordered size={'small'} column={1}>
