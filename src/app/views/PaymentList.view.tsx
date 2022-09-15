@@ -142,7 +142,9 @@ export default function PaymentListView() {
                   </Descriptions.Item>
                   <Descriptions.Item label={'Ações'}>
                     <Tooltip title={'Detalhar'} placement={xs ? 'top' : 'left'}>
-                      <Button size={'small'} icon={<EyeOutlined />} />
+                      <Link to={`/payments/${payment.id}`}>
+                        <Button size={'small'} icon={<EyeOutlined />} />
+                      </Link>
                     </Tooltip>
                     <Popconfirm
                       title='Remover agendamento?'
@@ -242,7 +244,9 @@ export default function PaymentListView() {
               return (
                 <>
                   <Tooltip title={'Detalhar'} placement='left'>
-                    <Button size='small' icon={<EyeOutlined />} />
+                    <Link to={`/payments/${id}`}>
+                      <Button size='small' icon={<EyeOutlined />} />
+                    </Link>
                   </Tooltip>
                   <Popconfirm
                     title='Remover agendamento?'

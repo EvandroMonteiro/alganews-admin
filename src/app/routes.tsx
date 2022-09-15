@@ -6,6 +6,7 @@ import CashFlowExpensesView from './views/CashFlowExpenses.view';
 import CashFlowRevenuesView from './views/CashFlowRevenues.view';
 import HomeView from './views/Home.view';
 import PaymentCreateView from './views/PaymentCreate.view';
+import PaymentDetailsView from './views/PaymentDetails.view';
 import PaymentListView from './views/PaymentList.view';
 import UserCreateView from './views/UserCreate.view';
 import UserDetailsView from './views/UserDetails.view';
@@ -45,34 +46,14 @@ export default function AppRoutes() {
     <Routes>
       <Route path={'/'} element={<HomeView />} />
       <Route path={'/users'} element={<UserListView />} />
-      <Route
-        path={'/users/create'}
-        element={<UserCreateView />}
-      />
-      <Route
-        path={'/users/edit/:id'}
-        element={<UserEditView />}
-      />
-      <Route
-        path={'/users/:id'}
-        element={<UserDetailsView />}
-      />
-      <Route
-        path={'/payments'}
-        element={<PaymentListView />}
-      />
-      <Route
-        path={'/payments/create'}
-        element={<PaymentCreateView />}
-      />
-      <Route
-        path={'/cash-flow/expenses'}
-        element={<CashFlowExpensesView />}
-      />
-      <Route
-        path={'/cash-flow/revenues'}
-        element={<CashFlowRevenuesView />}
-      />
+      <Route path={'/users/create'} element={<UserCreateView />} />
+      <Route path={'/users/edit/:id'} element={<UserEditView />} />
+      <Route path={'/users/:id'} element={<UserDetailsView />} />
+      <Route path={'/payments'} element={<PaymentListView />} />
+      <Route path={'/payments/:id'} element={<PaymentDetailsView />} />
+      <Route path={'/payments/create'} element={<PaymentCreateView />} />
+      <Route path={'/cash-flow/expenses'} element={<CashFlowExpensesView />} />
+      <Route path={'/cash-flow/revenues'} element={<CashFlowRevenuesView />} />
     </Routes>
   );
 }
