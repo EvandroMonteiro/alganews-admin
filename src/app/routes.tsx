@@ -50,8 +50,8 @@ export default function AppRoutes() {
       <Route path={'/users/edit/:id'} element={<UserEditView />} />
       <Route path={'/users/:id'} element={<UserDetailsView />} />
       <Route path={'/payments'} element={<PaymentListView />} />
-      <Route path={'/payments/:id'} element={<PaymentDetailsView />} />
       <Route path={'/payments/create'} element={<PaymentCreateView />} />
+      <Route path={'/payments/:id'} element={<PaymentDetailsView />} />
       <Route path={'/cash-flow/expenses'} element={<CashFlowExpensesView />} />
       <Route path={'/cash-flow/revenues'} element={<CashFlowRevenuesView />} />
     </Routes>

@@ -1,4 +1,4 @@
-import { Card, Divider } from 'antd';
+import { Button, Card, Divider, Space, Tag } from 'antd';
 import moment from 'moment';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,8 +7,12 @@ import NotFoundError from '../components/NotFoundError';
 import PaymentBonuses from '../features/PaymentBonuses';
 import PaymentHeader from '../features/PaymentHeader';
 import PaymentPosts from '../features/PaymentPosts';
+import { PrinterOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import usePageTitle from '../../core/hooks/usePageTitle';
+import DoubleConfirm from '../components/DoubleConfirm';
 
 export default function PaymentDetailsView() {
+  usePageTitle('Detalhes do pagamento');
   const params = useParams<{ id: string }>();
   const navegate = useNavigate();
 
@@ -17,8 +21,8 @@ export default function PaymentDetailsView() {
     fetchPosts,
     fetchingPayment,
     fetchingPosts,
-    postsNotFound,
     paymentNotFound,
+    approvingPayment,
     payment,
     posts,
   } = usePayment();
@@ -44,6 +48,46 @@ export default function PaymentDetailsView() {
 
   return (
     <>
+      <Space style={{ marginBottom: 16 }}>
+        <Button
+          className='no-print'
+          disabled={!payment}
+          type={'primary'}
+          icon={<PrinterOutlined />}
+          onClick={window.print}
+        >
+          Imprimir
+        </Button>
+        {payment?.approvedAt ? (
+          <Tag>
+            Pagamento aprovado em{' '}
+            {moment(payment.approvedAt).format('DD/MM/YYYY')}
+          </Tag>
+        ) : (
+          <DoubleConfirm
+            popConfirmTitle={'Deseja aprovar este agendamento?'}
+            modalTitle={'Ação irreversível'}
+            disabled={!payment}
+            modalContent={
+              'Aprovar um agendamento de pagamento gera uma despesa que não pode ser removida do fluxo de caixa. Essa ação não poderá ser desfeita.'
+            }
+            onConfirm={() => {
+              console.log('todo: implement payment approval');
+            }}
+          >
+            <Button
+              className='no-print'
+              loading={approvingPayment}
+              disabled={!payment}
+              icon={<CheckCircleOutlined />}
+              type={'primary'}
+              danger
+            >
+              Aprovar agendamento
+            </Button>
+          </DoubleConfirm>
+        )}
+      </Space>
       <Card>
         <PaymentHeader
           loading={fetchingPayment}

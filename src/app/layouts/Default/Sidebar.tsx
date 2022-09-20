@@ -46,9 +46,7 @@ const items: MenuProps['items'] = [
         icon: <TableOutlined />,
       },
       {
-        label: (
-          <Link to={'/payments/create'}>Consulta</Link>
-        ),
+        label: <Link to={'/payments/create'}>Cadastro</Link>,
         key: '/payments/create',
         icon: <PlusCircleOutlined />,
       },
@@ -60,16 +58,12 @@ const items: MenuProps['items'] = [
     icon: <DiffOutlined />,
     children: [
       {
-        label: (
-          <Link to={'/cash-flow/expenses'}>Despesas</Link>
-        ),
+        label: <Link to={'/cash-flow/expenses'}>Despesas</Link>,
         key: '/cash-flow/expenses',
         icon: <FallOutlined />,
       },
       {
-        label: (
-          <Link to={'/cash-flow/revenues'}>Receitas</Link>
-        ),
+        label: <Link to={'/cash-flow/revenues'}>Receitas</Link>,
         key: '/cash-flow/revenues',
         icon: <RiseOutlined />,
       },
@@ -83,7 +77,7 @@ export default function DefaultLayoutSidebar() {
   return (
     <Sider
       width={200}
-      className='site-layout-background'
+      className='site-layout-background no-print'
       breakpoint='lg'
       collapsedWidth='0'
     >

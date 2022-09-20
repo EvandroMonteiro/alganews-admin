@@ -11,6 +11,16 @@ export default function usePayment() {
 
   const [paymentNotFound, setPaymentNotFound] = useState(false);
   const [postsNotFound, setPostsNotFound] = useState(false);
+  const [approvingPayment, setApprovingPayment] = useState(false);
+
+  const approvePayment = useCallback(async (paymentId: number) => {
+    try {
+      setApprovingPayment(true);
+      await PaymentService.approvePayment(paymentId);
+    } finally {
+      setApprovingPayment(false);
+    }
+  }, []);
 
   const fetchPayment = useCallback(async (paymentId: number) => {
     try {
@@ -45,8 +55,10 @@ export default function usePayment() {
   return {
     fetchPayment,
     fetchPosts,
+    approvePayment,
     fetchingPayment,
     fetchingPosts,
+    approvingPayment,
     paymentNotFound,
     postsNotFound,
     posts,
