@@ -1,9 +1,10 @@
 import { Col, DatePicker, Form, Row, Select } from 'antd';
 import { Payment } from 'goodvandro-alganews-sdk';
+import moment from 'moment';
 import useUsers from '../../core/hooks/useUsers';
 
 export default function PaymentForm() {
-  const { users } = useUsers();
+  const { editors } = useUsers();
 
   return (
     <Form<Payment.Input> layout={'vertical'}>
@@ -26,9 +27,9 @@ export default function PaymentForm() {
                 );
               }}
             >
-              {users.map((user) => (
-                <Select.Option key={user.id} value={user.id}>
-                  {user.name}
+              {editors.map((editor) => (
+                <Select.Option key={editor.id} value={editor.id}>
+                  {editor.name}
                 </Select.Option>
               ))}
             </Select>
@@ -44,7 +45,16 @@ export default function PaymentForm() {
         </Col>
         <Col xs={24} lg={8}>
           <Form.Item label={'Agendamento'}>
-            <DatePicker style={{ width: '100%' }} format={'DD/MM/YYYY'} />
+            <DatePicker
+              disabledDate={(date) => {
+                return (
+                  date.isBefore(moment()) ||
+                  date.isAfter(moment().add(7, 'days'))
+                );
+              }}
+              style={{ width: '100%' }}
+              format={'DD/MM/YYYY'}
+            />
           </Form.Item>
         </Col>
       </Row>
