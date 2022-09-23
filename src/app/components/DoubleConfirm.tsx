@@ -18,9 +18,7 @@ export default function DoubleConfirm(props: DoubleConfirmProps) {
       onConfirm={() => {
         confirm({
           title: props.modalTitle,
-          onOk() {
-            console.log('todo: implement payment batch approval');
-          },
+          onOk: props.onConfirm,
           content: props.modalContent,
         });
       }}
