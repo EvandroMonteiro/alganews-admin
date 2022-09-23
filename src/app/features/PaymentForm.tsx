@@ -9,6 +9,7 @@ import {
   Input,
   Row,
   Select,
+  Skeleton,
   Space,
   Tabs,
   Tooltip,
@@ -25,6 +26,8 @@ import CurrencyInput from '../components/CurrencyInput';
 import usePayment from '../../core/hooks/usePayment';
 import transformIntoBrl from '../../core/hooks/transformIntoBrl';
 import AskForPaymentPreview from './AskForPaymentPreview';
+import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
+import { BusinessError } from 'goodvandro-alganews-sdk/dist/errors';
 
 export default function PaymentForm() {
   const [form] = useForm<Payment.Input>();
@@ -36,11 +39,16 @@ export default function PaymentForm() {
     clearPaymentPreview,
   } = usePayment();
   const [scheduledTo, setScheduledTo] = useState('');
+  const [paymentPreviewError, setPaymentPreviewError] = useState<CustomError>();
 
   const updateScheduledTo = useCallback(() => {
     const { scheduledTo } = form.getFieldsValue();
     setScheduledTo(scheduledTo);
   }, [form]);
+
+  const clearPaymentPreviewError = useCallback(() => {
+    setPaymentPreviewError(undefined);
+  }, []);
 
   const getPaymentPreview = useCallback(async () => {
     const { accountingPeriod, bonuses, payee } = form.getFieldsValue();
@@ -52,14 +60,24 @@ export default function PaymentForm() {
           accountingPeriod,
           bonuses: bonuses || [],
         });
+        clearPaymentPreviewError();
       } catch (err) {
         clearPaymentPreview();
+        if (err instanceof BusinessError) {
+          setPaymentPreviewError(err);
+        }
         throw err;
       }
     } else {
       clearPaymentPreview();
+      clearPaymentPreviewError();
     }
-  }, [form, fetchPaymentPreview, clearPaymentPreview]);
+  }, [
+    form,
+    fetchPaymentPreview,
+    clearPaymentPreview,
+    clearPaymentPreviewError,
+  ]);
 
   const handleFormChange = useCallback(
     ([field]: FieldData[]) => {
@@ -165,8 +183,13 @@ export default function PaymentForm() {
         </Col>
         <Divider />
         <Col xs={24} lg={12}>
-          {!paymentPreview ? (
-            <AskForPaymentPreview />
+          {fetchingPaymentPreview ? (
+            <>
+              <Skeleton />
+              <Skeleton title={false} />
+            </>
+          ) : !paymentPreview ? (
+            <AskForPaymentPreview error={paymentPreviewError} />
           ) : (
             <Tabs defaultActiveKey={'payment'}>
               <Tabs.TabPane tab={'Demonstrativo'} key={'payment'}>
