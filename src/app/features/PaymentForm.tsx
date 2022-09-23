@@ -16,14 +16,30 @@ import moment, { Moment } from 'moment';
 import useUsers from '../../core/hooks/useUsers';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import CurrencyInput from '../components/CurrencyInput';
+import { useCallback } from 'react';
+import { FieldData } from 'rc-field-form/lib/interface';
 
 export default function PaymentForm() {
   const [form] = useForm<Payment.Input>();
   const { editors } = useUsers();
+
+  const handleFormChange = useCallback(([field]: FieldData[]) => {
+    if (Array.isArray(field.name)) {
+      if (
+        field.name.includes('payee') ||
+        field.name.includes('_accountingPeriod') ||
+        field.name.includes('bonuses')
+      ) {
+        console.log('todo: implement payment calculation');
+      }
+    }
+  }, []);
+
   return (
     <Form<Payment.Input>
       form={form}
       layout={'vertical'}
+      onFieldsChange={handleFormChange}
       onFinish={(form) => {
         console.log(form);
       }}
@@ -124,7 +140,7 @@ export default function PaymentForm() {
                   R$ 23.432,00
                 </Descriptions.Item>
                 {[1].map((bonus) => (
-                  <Descriptions.Item label={`Bônus ${bonus}`}>
+                  <Descriptions.Item key={bonus} label={`Bônus ${bonus}`}>
                     R$ R$ 15.000,00
                   </Descriptions.Item>
                 ))}
@@ -164,7 +180,7 @@ export default function PaymentForm() {
                 <>
                   {fields.map((field) => {
                     return (
-                      <Row gutter={24}>
+                      <Row gutter={24} key={field.name}>
                         <Col xs={24} lg={14}>
                           <Form.Item
                             label={'Descrição'}
