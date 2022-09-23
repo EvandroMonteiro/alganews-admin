@@ -1,11 +1,22 @@
-import { Button, Col, DatePicker, Form, Input, Row, Select } from 'antd';
+import {
+  Button,
+  Col,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  Row,
+  Select,
+} from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Payment } from 'goodvandro-alganews-sdk';
 import moment, { Moment } from 'moment';
 import useUsers from '../../core/hooks/useUsers';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import CurrencyInput from '../components/CurrencyInput';
 
 export default function PaymentForm() {
-  const [form] = useForm();
+  const [form] = useForm<Payment.Input>();
   const { editors } = useUsers();
   return (
     <Form<Payment.Input>
@@ -86,6 +97,75 @@ export default function PaymentForm() {
               format={'DD/MM/YYYY'}
             />
           </Form.Item>
+        </Col>
+        <Divider />
+        <Col xs={24} lg={12}>
+          todo: payment preview
+        </Col>
+        <Col xs={24} lg={12}>
+          <Form.List name={'bonuses'}>
+            {(fields, { add, remove }) => {
+              return (
+                <>
+                  {fields.map((field) => {
+                    return (
+                      <Row gutter={24}>
+                        <Col xs={24} lg={14}>
+                          <Form.Item
+                            label={'Descrição'}
+                            {...field}
+                            name={[field.name, 'title']}
+                          >
+                            <Input placeholder={'E.g.: 1 milhão de views'} />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} lg={6}>
+                          <Form.Item
+                            label={'Valor'}
+                            initialValue={0}
+                            {...field}
+                            name={[field.name, 'amount']}
+                          >
+                            <CurrencyInput
+                              onChange={(a, amount) => {
+                                const { bonuses } = form.getFieldsValue();
+
+                                form.setFieldsValue({
+                                  bonuses: bonuses?.map((bonus, index) => {
+                                    return index === field.name
+                                      ? { title: bonus.title, amount }
+                                      : bonus;
+                                  }),
+                                });
+                              }}
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} lg={4}>
+                          <Form.Item label={'Remover'}>
+                            <Button
+                              onClick={() => remove(field.name)}
+                              icon={<DeleteOutlined />}
+                              danger
+                              size={'small'}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    );
+                  })}
+                  <Button
+                    type={'dashed'}
+                    onClick={() => add()}
+                    block
+                    icon={<PlusOutlined />}
+                  >
+                    Adicionar bónus
+                  </Button>
+                </>
+              );
+            }}
+          </Form.List>
         </Col>
       </Row>
       <Button htmlType='submit'>enviar</Button>
