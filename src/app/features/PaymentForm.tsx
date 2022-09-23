@@ -17,7 +17,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { Payment } from 'goodvandro-alganews-sdk';
 import moment, { Moment } from 'moment';
 import { FieldData } from 'rc-field-form/lib/interface';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import debounce from 'lodash.debounce';
 import { InfoCircleFilled } from '@ant-design/icons';
 import useUsers from '../../core/hooks/useUsers';
@@ -30,6 +30,12 @@ export default function PaymentForm() {
   const { editors } = useUsers();
   const { fetchingPaymentPreview, paymentPreview, fetchPaymentPreview } =
     usePayment();
+  const [scheduledTo, setScheduledTo] = useState('');
+
+  const updateScheduledTo = useCallback(() => {
+    const { scheduledTo } = form.getFieldsValue();
+    setScheduledTo(scheduledTo);
+  }, [form]);
 
   const getPaymentPreview = useCallback(() => {
     const { accountingPeriod, bonuses, payee } = form.getFieldsValue();
@@ -52,6 +58,10 @@ export default function PaymentForm() {
           field.name.includes('bonuses')
         ) {
           getPaymentPreview();
+        }
+
+        if (field.name.includes('scheduledTo')) {
+          updateScheduledTo();
         }
       }
     },
@@ -166,7 +176,7 @@ export default function PaymentForm() {
                   </Space>
                 </Descriptions.Item>
                 <Descriptions.Item label={'Agendamento'}>
-                  05/08/2021
+                  {scheduledTo && moment(scheduledTo).format('DD/MM/YYYY')}
                 </Descriptions.Item>
                 <Descriptions.Item label={'Palavras'}>
                   {paymentPreview?.earnings.words}
