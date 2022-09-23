@@ -9,7 +9,9 @@ import {
   Input,
   Row,
   Select,
+  Space,
   Tabs,
+  Tooltip,
 } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Payment } from 'goodvandro-alganews-sdk';
@@ -17,24 +19,44 @@ import moment, { Moment } from 'moment';
 import { FieldData } from 'rc-field-form/lib/interface';
 import { useCallback } from 'react';
 import debounce from 'lodash.debounce';
+import { InfoCircleFilled } from '@ant-design/icons';
 import useUsers from '../../core/hooks/useUsers';
 import CurrencyInput from '../components/CurrencyInput';
+import usePayment from '../../core/hooks/usePayment';
+import transformIntoBrl from '../../core/hooks/transformIntoBrl';
 
 export default function PaymentForm() {
   const [form] = useForm<Payment.Input>();
   const { editors } = useUsers();
+  const { fetchingPaymentPreview, paymentPreview, fetchPaymentPreview } =
+    usePayment();
 
-  const handleFormChange = useCallback(([field]: FieldData[]) => {
-    if (Array.isArray(field.name)) {
-      if (
-        field.name.includes('payee') ||
-        field.name.includes('_accountingPeriod') ||
-        field.name.includes('bonuses')
-      ) {
-        console.log('todo: implement payment calculation');
-      }
+  const getPaymentPreview = useCallback(() => {
+    const { accountingPeriod, bonuses, payee } = form.getFieldsValue();
+
+    if (payee.id && accountingPeriod.endsOn && accountingPeriod.startsOn) {
+      fetchPaymentPreview({
+        payee,
+        accountingPeriod,
+        bonuses: bonuses || [],
+      });
     }
-  }, []);
+  }, [form, fetchPaymentPreview]);
+
+  const handleFormChange = useCallback(
+    ([field]: FieldData[]) => {
+      if (Array.isArray(field?.name)) {
+        if (
+          field.name.includes('payee') ||
+          field.name.includes('_accountingPeriod') ||
+          field.name.includes('bonuses')
+        ) {
+          getPaymentPreview();
+        }
+      }
+    },
+    [getPaymentPreview]
+  );
 
   const debouncedHandleFormChange = debounce(handleFormChange, 1000);
 
@@ -130,25 +152,47 @@ export default function PaymentForm() {
                 column={1}
               >
                 <Descriptions.Item label={'Editor'}>
-                  Daniel Bonifacio
+                  {paymentPreview?.payee.name}
                 </Descriptions.Item>
                 <Descriptions.Item label={'Período'}>
-                  20/07/2021 à 30/07/2021
+                  <Space>
+                    {moment(paymentPreview?.accountingPeriod.startsOn).format(
+                      'DD/MM/YYYY'
+                    )}
+                    <span>à</span>
+                    {moment(paymentPreview?.accountingPeriod.endsOn).format(
+                      'DD/MM/YYYY'
+                    )}
+                  </Space>
                 </Descriptions.Item>
                 <Descriptions.Item label={'Agendamento'}>
                   05/08/2021
                 </Descriptions.Item>
-                <Descriptions.Item label={'Palavras'}>432</Descriptions.Item>
-                <Descriptions.Item label={'Ganhos'}>
-                  R$ 23.432,00
+                <Descriptions.Item label={'Palavras'}>
+                  {paymentPreview?.earnings.words}
                 </Descriptions.Item>
-                {[1].map((bonus) => (
-                  <Descriptions.Item key={bonus} label={`Bônus ${bonus}`}>
-                    R$ R$ 15.000,00
+                <Descriptions.Item label={'Ganhos'}>
+                  {transformIntoBrl(paymentPreview?.grandTotalAmount)}
+                </Descriptions.Item>
+                {paymentPreview?.bonuses.map((bonus, index) => (
+                  <Descriptions.Item
+                    key={index}
+                    label={
+                      <Space>
+                        {`Bónus ${index + 1}`}
+                        <Tooltip title={bonus.title}>
+                          <InfoCircleFilled
+                            style={{ color: '#09f', fontSize: 18 }}
+                          />
+                        </Tooltip>
+                      </Space>
+                    }
+                  >
+                    {transformIntoBrl(bonus.amount)}
                   </Descriptions.Item>
                 ))}
-                <Descriptions.Item label={'Ganhos'}>
-                  R$ 7.432,00
+                <Descriptions.Item label={'Ganhos de posts'}>
+                  {transformIntoBrl(paymentPreview?.earnings.totalAmount)}
                 </Descriptions.Item>
               </Descriptions>
             </Tabs.TabPane>
@@ -160,17 +204,21 @@ export default function PaymentForm() {
                 column={1}
               >
                 <Descriptions.Item label={'Código do Banco'}>
-                  341
+                  {paymentPreview?.bankAccount.bankCode}
                 </Descriptions.Item>
                 <Descriptions.Item label={'Número da conta'}>
-                  1065160
+                  {paymentPreview?.bankAccount.number}
                 </Descriptions.Item>
                 <Descriptions.Item label={'Dígito da conta'}>
-                  8
+                  {paymentPreview?.bankAccount.digit}
                 </Descriptions.Item>
-                <Descriptions.Item label={'Agência'}>0001</Descriptions.Item>
+                <Descriptions.Item label={'Agência'}>
+                  {paymentPreview?.bankAccount.agency}
+                </Descriptions.Item>
                 <Descriptions.Item label={'Tipo de conta'}>
-                  Conta Corrente
+                  {paymentPreview?.bankAccount.type === 'CHECKING'
+                    ? 'Conta Corrente'
+                    : 'Conta Poupança'}
                 </Descriptions.Item>
               </Descriptions>
             </Tabs.TabPane>

@@ -5,13 +5,15 @@ import { useCallback, useState } from 'react';
 export default function usePayment() {
   const [posts, setPosts] = useState<Post.WithEarnings[]>([]);
   const [payment, setPayment] = useState<Payment.Detailed>();
+  const [paymentPreview, setPaymentPreview] = useState<Payment.Preview>();
 
   const [fetchingPosts, setFetchingPosts] = useState(false);
   const [fetchingPayment, setFetchingPayment] = useState(false);
+  const [approvingPayment, setApprovingPayment] = useState(false);
+  const [fetchingPaymentPreview, setFetchingPaymentPreview] = useState(false);
 
   const [paymentNotFound, setPaymentNotFound] = useState(false);
   const [postsNotFound, setPostsNotFound] = useState(false);
-  const [approvingPayment, setApprovingPayment] = useState(false);
 
   const approvePayment = useCallback(async (paymentId: number) => {
     try {
@@ -52,6 +54,19 @@ export default function usePayment() {
     }
   }, []);
 
+  const fetchPaymentPreview = useCallback(
+    async (paymentPreview: Payment.PreviewInput) => {
+      try {
+        setFetchingPaymentPreview(true);
+        const preview = await PaymentService.getPaymentPreview(paymentPreview);
+        setPaymentPreview(preview);
+      } finally {
+        setFetchingPaymentPreview(false);
+      }
+    },
+    []
+  );
+
   return {
     fetchPayment,
     fetchPosts,
@@ -63,5 +78,8 @@ export default function usePayment() {
     postsNotFound,
     posts,
     payment,
+    paymentPreview,
+    fetchPaymentPreview,
+    fetchingPaymentPreview,
   };
 }
