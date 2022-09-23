@@ -1,36 +1,37 @@
-import { Payment, PaymentService } from 'goodvandro-alganews-sdk';
-import { useCallback, useState } from 'react';
+import { Payment } from 'goodvandro-alganews-sdk';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../store';
+import * as PaymentActions from '../store/Payment.slice';
 
 export default function usePayments() {
-  const [fetchingPayments, setFetchingPayments] = useState(false);
-  const [payments, setPayments] = useState<Payment.Paginated>();
+  const dispatch = useDispatch<any>();
 
-  const [approvingPaymentBatch, setApprovingPaymentBatch] = useState(false);
+  const fetching = useSelector((s: RootState) => s.payment.fetching);
+  const payments = useSelector((s: RootState) => s.payment.paginated);
+  const query = useSelector((s: RootState) => s.payment.query);
 
-  const approvePaymentBatch = useCallback(async (paymentIds: number[]) => {
-    try {
-      setApprovingPaymentBatch(true);
-      await PaymentService.approvePaymentsBatch(paymentIds);
-    } finally {
-      setApprovingPaymentBatch(false);
-    }
-  }, []);
+  const approvePaymentsInBatch = useCallback(
+    (ids: number[]) => dispatch(PaymentActions.approvePaymentsInBatch(ids)),
+    [dispatch]
+  );
 
-  const fetchPayments = useCallback(async (query: Payment.Query) => {
-    try {
-      setFetchingPayments(true);
-      const payments = await PaymentService.getAllPayments(query);
-      setPayments(payments);
-    } finally {
-      setFetchingPayments(false);
-    }
-  }, []);
+  const fetchPayments = useCallback(
+    () => dispatch(PaymentActions.getAllPayments()),
+    [dispatch]
+  );
+
+  const setQuery = useCallback(
+    (query: Payment.Query) => dispatch(PaymentActions.setQuery(query)),
+    [dispatch]
+  );
 
   return {
     payments,
+    fetching,
+    query,
     fetchPayments,
-    fetchingPayments,
-    approvingPaymentBatch,
-    approvePaymentBatch,
+    approvePaymentsInBatch,
+    setQuery,
   };
 }

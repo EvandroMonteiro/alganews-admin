@@ -1,25 +1,22 @@
-import {
-  configureStore,
-  isRejected,
-  Middleware,
-} from '@reduxjs/toolkit';
+import { configureStore, isRejected, Middleware } from '@reduxjs/toolkit';
 import userReducer from './User.reducer';
 import { notification } from 'antd';
+import PaymentReducer from './Payment.slice';
 
-const observeActions: Middleware =
-  () => (next) => (action) => {
-    if (isRejected(action)) {
-      notification.error({
-        message: action.error.message,
-      });
-    }
+const observeActions: Middleware = () => (next) => (action) => {
+  if (isRejected(action)) {
+    notification.error({
+      message: action.error.message,
+    });
+  }
 
-    next(action);
-  };
+  next(action);
+};
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
+    payment: PaymentReducer,
   },
   middleware: function (getDefaultMiddleware) {
     return [...getDefaultMiddleware(), observeActions];

@@ -12,43 +12,32 @@ import {
 } from 'antd';
 import { Payment } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import usePayments from '../../core/hooks/usePayments';
 import confirm from 'antd/lib/modal/confirm';
-import { Key } from 'antd/lib/table/interface';
+import { useState } from 'react';
+import { Key, SorterResult } from 'antd/lib/table/interface';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import DoubleConfirm from '../components/DoubleConfirm';
 import { Link } from 'react-router-dom';
 
 export default function PaymentListView() {
+  const { xs } = useBreakpoint();
   const {
     payments,
+    fetching,
+    query,
     fetchPayments,
-    fetchingPayments,
-    approvingPaymentBatch,
-    approvePaymentBatch,
+    setQuery,
+    approvePaymentsInBatch,
   } = usePayments();
-  const [yearMonth, setYearMonth] = useState<string | undefined>();
-  const [page, setPage] = useState(1);
-  const [sortingOrder, setSortingOrder] = useState<
-    'asc' | 'desc' | undefined
-  >();
+
   const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-  const { xs } = useBreakpoint();
 
   useEffect(() => {
-    console.log('selectedRowKeys', selectedRowKeys);
-  }, [selectedRowKeys]);
-
-  useEffect(() => {
-    fetchPayments({
-      scheduledToYearMonth: yearMonth,
-      sort: ['scheduledTo', sortingOrder || 'desc'],
-      page: page - 1,
-      size: 7,
-    });
-  }, [fetchPayments, yearMonth, page, sortingOrder]);
+    fetchPayments();
+  }, [fetchPayments]);
 
   return (
     <>
@@ -72,7 +61,7 @@ export default function PaymentListView() {
               'Esta é uma ação irreversível. Ao aprovar um agendamento, ele não poderá ser removido!'
             }
             onConfirm={async () => {
-              await approvePaymentBatch(selectedRowKeys as number[]);
+              await approvePaymentsInBatch(selectedRowKeys as number[]);
               notification.success({
                 message: 'Os pagamentos selecionados foram aprovados',
               });
@@ -91,7 +80,9 @@ export default function PaymentListView() {
             format={'MMMM - YYYY'}
             placeholder={'Filtrar por mês'}
             onChange={(date) => {
-              setYearMonth(date ? date?.format('YYYY-MM') : undefined);
+              setQuery({
+                scheduledToYearMonth: date ? date.format('YYYY-MM') : undefined,
+              });
             }}
           />
         </Space>
@@ -99,16 +90,20 @@ export default function PaymentListView() {
       <Table<Payment.Summary>
         dataSource={payments?.content}
         rowKey='id'
-        loading={fetchingPayments}
-        onChange={(pagination, filters, sorter) => {
-          const { order } = sorter;
-          order === 'ascend' ? setSortingOrder('asc') : setSortingOrder('desc');
+        loading={fetching}
+        onChange={(p, f, sorter) => {
+          const { order } = sorter as SorterResult<Payment.Summary>;
+          const direction = order?.replace('end', '');
+          if (direction && direction !== query.sort![1])
+            setQuery({
+              sort: [query.sort![0], direction as 'asc' | 'desc'],
+            });
         }}
         pagination={{
-          current: page,
-          onChange: setPage,
+          current: query.page ? query.page + 1 : 1,
+          onChange: (page) => setQuery({ page: page - 1 }),
           total: payments?.totalElements,
-          pageSize: 7,
+          pageSize: query.size,
         }}
         rowSelection={{
           selectedRowKeys,
@@ -152,7 +147,7 @@ export default function PaymentListView() {
                   </Descriptions.Item>
                   <Descriptions.Item label={'Ações'}>
                     <Tooltip title={'Detalhar'} placement={xs ? 'top' : 'left'}>
-                      <Link to={`/payments/${payment.id}`}>
+                      <Link to={`/pagamentos/${payment.id}`}>
                         <Button size={'small'} icon={<EyeOutlined />} />
                       </Link>
                     </Tooltip>
@@ -198,7 +193,7 @@ export default function PaymentListView() {
             ellipsis: true,
             width: 180,
             render(payee: Payment.Summary['payee']) {
-              return <Link to={`/users/${payee.id}`}>{payee.name}</Link>;
+              return <Link to={`/usuarios/${payee.id}`}>{payee.name}</Link>;
             },
           },
           {
@@ -254,7 +249,7 @@ export default function PaymentListView() {
               return (
                 <>
                   <Tooltip title={'Detalhar'} placement='left'>
-                    <Link to={`/payments/${id}`}>
+                    <Link to={`/pagamentos/${id}`}>
                       <Button size='small' icon={<EyeOutlined />} />
                     </Link>
                   </Tooltip>
