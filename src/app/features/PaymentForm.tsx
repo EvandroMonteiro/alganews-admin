@@ -1,3 +1,4 @@
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -13,11 +14,11 @@ import {
 import { useForm } from 'antd/lib/form/Form';
 import { Payment } from 'goodvandro-alganews-sdk';
 import moment, { Moment } from 'moment';
-import useUsers from '../../core/hooks/useUsers';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import CurrencyInput from '../components/CurrencyInput';
-import { useCallback } from 'react';
 import { FieldData } from 'rc-field-form/lib/interface';
+import { useCallback } from 'react';
+import debounce from 'lodash.debounce';
+import useUsers from '../../core/hooks/useUsers';
+import CurrencyInput from '../components/CurrencyInput';
 
 export default function PaymentForm() {
   const [form] = useForm<Payment.Input>();
@@ -35,11 +36,13 @@ export default function PaymentForm() {
     }
   }, []);
 
+  const debouncedHandleFormChange = debounce(handleFormChange, 1000);
+
   return (
     <Form<Payment.Input>
       form={form}
       layout={'vertical'}
-      onFieldsChange={handleFormChange}
+      onFieldsChange={debouncedHandleFormChange}
       onFinish={(form) => {
         console.log(form);
       }}
