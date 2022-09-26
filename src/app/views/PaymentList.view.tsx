@@ -147,7 +147,7 @@ export default function PaymentListView() {
                   </Descriptions.Item>
                   <Descriptions.Item label={'Ações'}>
                     <Tooltip title={'Detalhar'} placement={xs ? 'top' : 'left'}>
-                      <Link to={`/pagamentos/${payment.id}`}>
+                      <Link to={`/payments/${payment.id}`}>
                         <Button size={'small'} icon={<EyeOutlined />} />
                       </Link>
                     </Tooltip>
@@ -193,7 +193,7 @@ export default function PaymentListView() {
             ellipsis: true,
             width: 180,
             render(payee: Payment.Summary['payee']) {
-              return <Link to={`/usuarios/${payee.id}`}>{payee.name}</Link>;
+              return <Link to={`/users/${payee.id}`}>{payee.name}</Link>;
             },
           },
           {
