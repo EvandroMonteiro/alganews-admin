@@ -32,6 +32,7 @@ export default function PaymentListView() {
     setQuery,
     approvePaymentsInBatch,
     setSelected,
+    deleteExistingPayment,
   } = usePayments();
 
   useEffect(() => {
@@ -158,7 +159,7 @@ export default function PaymentListView() {
                           title: 'Remover agendamento',
                           cancelText: 'Cancelar',
                           onOk() {
-                            console.log('todo: implement payment deletion');
+                            deleteExistingPayment(payment.id);
                           },
                           content:
                             'Esta é uma ação irreversível. Ao remover um agendamento, ele não poderá ser recuperado!',
@@ -248,7 +249,7 @@ export default function PaymentListView() {
               return (
                 <>
                   <Tooltip title={'Detalhar'} placement='left'>
-                    <Link to={`/pagamentos/${id}`}>
+                    <Link to={`/payments/${id}`}>
                       <Button size='small' icon={<EyeOutlined />} />
                     </Link>
                   </Tooltip>
@@ -260,7 +261,7 @@ export default function PaymentListView() {
                         title: 'Remover agendamento',
                         cancelText: 'Cancelar',
                         onOk() {
-                          console.log('todo: implement payment deletion');
+                          deleteExistingPayment(id);
                         },
                         content:
                           'Esta é uma ação irreversível. Ao remover um agendamento, ele não poderá ser recuperado!',
