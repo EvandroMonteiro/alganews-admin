@@ -6,6 +6,7 @@ import {
   isRejected,
   PayloadAction,
 } from '@reduxjs/toolkit';
+import { Key } from 'antd/lib/table/interface';
 import { Payment, PaymentService } from 'goodvandro-alganews-sdk';
 import { RootState } from '.';
 
@@ -13,10 +14,12 @@ interface PaymentState {
   paginated: Payment.Paginated;
   fetching: boolean;
   query: Payment.Query;
+  selected: Key[];
 }
 
 const initialState: PaymentState = {
   fetching: false,
+  selected: [],
   query: {
     sort: ['scheduledTo', 'desc'],
     page: 0,
@@ -44,8 +47,10 @@ export const getAllPayments = createAsyncThunk(
 
 export const approvePaymentsInBatch = createAsyncThunk(
   'payment/approvePaymentsInBatch',
-  async (paymentIds: number[]) => {
+  async (paymentIds: number[], { dispatch }) => {
     await PaymentService.approvePaymentsBatch(paymentIds);
+    await dispatch(getAllPayments());
+    await dispatch(storeSelectedKeys([]));
   }
 );
 
@@ -70,6 +75,9 @@ const PaymentSlice = createSlice({
         ...action.payload,
       };
     },
+    storeSelectedKeys(state, action: PayloadAction<Key[]>) {
+      state.selected = action.payload;
+    },
   },
   extraReducers(builder) {
     const success = isFulfilled(getAllPayments, approvePaymentsInBatch);
@@ -89,7 +97,8 @@ const PaymentSlice = createSlice({
   },
 });
 
-export const { storeList, storeQuery } = PaymentSlice.actions;
+export const { storeList, storeQuery, storeSelectedKeys } =
+  PaymentSlice.actions;
 
 const PaymentReducer = PaymentSlice.reducer;
 export default PaymentReducer;

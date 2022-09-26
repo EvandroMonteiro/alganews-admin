@@ -1,3 +1,4 @@
+import { Key } from 'antd/lib/table/interface';
 import { Payment } from 'goodvandro-alganews-sdk';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +11,7 @@ export default function usePayments() {
   const fetching = useSelector((s: RootState) => s.payment.fetching);
   const payments = useSelector((s: RootState) => s.payment.paginated);
   const query = useSelector((s: RootState) => s.payment.query);
+  const selected = useSelector((s: RootState) => s.payment.selected);
 
   const approvePaymentsInBatch = useCallback(
     (ids: number[]) => dispatch(PaymentActions.approvePaymentsInBatch(ids)),
@@ -26,12 +28,19 @@ export default function usePayments() {
     [dispatch]
   );
 
+  const setSelected = useCallback(
+    (keys: Key[]) => dispatch(PaymentActions.storeSelectedKeys(keys)),
+    [dispatch]
+  );
+
   return {
     payments,
     fetching,
     query,
+    selected,
     fetchPayments,
     approvePaymentsInBatch,
     setQuery,
+    setSelected,
   };
 }
