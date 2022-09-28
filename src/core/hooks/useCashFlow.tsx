@@ -1,12 +1,19 @@
 import { CashFlow, CashFlowService } from 'goodvandro-alganews-sdk';
+import moment from 'moment';
 import { useCallback, useState } from 'react';
 
-export default function useCashFlow() {
-  const [entries, setEntries] = useState<CashFlow.EntrySummary[]>([]);
+type CashFlowEntryType = CashFlow.EntrySummary['type'];
 
+export default function useCashFlow(type: CashFlowEntryType) {
+  const [entries, setEntries] = useState<CashFlow.EntrySummary[]>([]);
+  const [query, setQuery] = useState<CashFlow.Query>({
+    type,
+    sort: ['transactedOn', 'desc'],
+    yearMonth: moment().format('YYYY-MM'),
+  });
   const [fetchingEntries, setFetchingEntries] = useState(false);
 
-  const fetchEntries = useCallback(async (query: CashFlow.Query) => {
+  const fetchEntries = useCallback(async () => {
     try {
       setFetchingEntries(true);
       const newEntries = await CashFlowService.getAllEntries(query);
@@ -14,11 +21,13 @@ export default function useCashFlow() {
     } finally {
       setFetchingEntries(false);
     }
-  }, []);
+  }, [query]);
 
   return {
     entries,
     fetchingEntries,
+    query,
     fetchEntries,
+    setQuery,
   };
 }
