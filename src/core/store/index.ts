@@ -1,4 +1,9 @@
-import { configureStore, isRejected, Middleware } from '@reduxjs/toolkit';
+import {
+  combineReducers,
+  configureStore,
+  isRejected,
+  Middleware,
+} from '@reduxjs/toolkit';
 import userReducer from './User.reducer';
 import { notification } from 'antd';
 import PaymentReducer from './Payment.slice';
@@ -15,12 +20,16 @@ const observeActions: Middleware = () => (next) => (action) => {
   next(action);
 };
 
+const cashFlowReducer = combineReducers({
+  expense: expenseReducer,
+  revenue: revenueReducer,
+});
+
 export const store = configureStore({
   reducer: {
     user: userReducer,
     payment: PaymentReducer,
-    expense: expenseReducer,
-    revenue: revenueReducer,
+    cashFlow: cashFlowReducer,
   },
   middleware: function (getDefaultMiddleware) {
     return [...getDefaultMiddleware(), observeActions];

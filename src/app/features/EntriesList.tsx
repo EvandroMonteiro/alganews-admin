@@ -1,20 +1,21 @@
+import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Space, Table, Tag, Tooltip } from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useEffect } from 'react';
 import transformIntoBrl from '../../core/hooks/transformIntoBrl';
 import useCashFlow from '../../core/hooks/useCashFlow';
-import { DeleteOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
-import { Key } from 'antd/lib/table/interface';
 
-interface EntriesListProps {
-  selected: Key[];
-  onSelect: (key: Key[]) => any;
-}
-
-export default function EntriesList(props: EntriesListProps) {
-  const { entries, fetchingEntries, fetchEntries, setQuery, query } =
-    useCashFlow('EXPENSE');
+export default function EntriesList() {
+  const {
+    entries,
+    fetching,
+    fetchEntries,
+    setQuery,
+    query,
+    selected,
+    setSelected,
+  } = useCashFlow('EXPENSE');
 
   useEffect(() => {
     fetchEntries();
@@ -24,10 +25,10 @@ export default function EntriesList(props: EntriesListProps) {
     <Table<CashFlow.EntrySummary>
       dataSource={entries}
       rowKey={'id'}
-      loading={fetchingEntries}
+      loading={fetching}
       rowSelection={{
-        selectedRowKeys: props.selected,
-        onChange: props.onSelect,
+        selectedRowKeys: selected,
+        onChange: setSelected,
         getCheckboxProps(record) {
           return !record.canBeDeleted ? { disabled: true } : {};
         },

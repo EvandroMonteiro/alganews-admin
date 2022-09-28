@@ -26,7 +26,7 @@ const initialState: RevenueState = {
 export const getRevenues = createAsyncThunk(
   'cash-flow/revenues/getRevenues',
   async (_, { getState, dispatch }) => {
-    const { query } = (getState() as RootState).revenue;
+    const { query } = (getState() as RootState).cashFlow.revenue;
     const revenues = await CashFlowService.getAllEntries(query);
     await dispatch(storeList(revenues));
   }
@@ -36,6 +36,14 @@ export const removeEntriesInBatch = createAsyncThunk(
   'cash-flow/revenues/removeEntriesInBatch',
   async (ids: number[], { dispatch }) => {
     await CashFlowService.removeEntriesBatch(ids);
+    await dispatch(getRevenues());
+  }
+);
+
+export const setQuery = createAsyncThunk(
+  'cash-flow/revenues/setQuery',
+  async (query: Partial<CashFlow.Query>, { dispatch }) => {
+    await dispatch(_setQuery(query));
     await dispatch(getRevenues());
   }
 );
@@ -79,8 +87,12 @@ const revenueSlice = createSlice({
   },
 });
 
-export const { storeList, setSelectRevenue, setQuery, setFetching } =
-  revenueSlice.actions;
+export const {
+  storeList,
+  setSelectRevenue: setSelectedRevenue,
+  setQuery: _setQuery,
+  setFetching,
+} = revenueSlice.actions;
 
 const revenueReducer = revenueSlice.reducer;
 export default revenueReducer;
