@@ -9,6 +9,7 @@ import { notification } from 'antd';
 import PaymentReducer from './Payment.slice';
 import expenseReducer from './Expense.slice';
 import revenueReducer from './Revenue.slice';
+import entriesCategoryReducer from './EntriesCategory.slice';
 
 const observeActions: Middleware = () => (next) => (action) => {
   if (isRejected(action)) {
@@ -23,6 +24,7 @@ const observeActions: Middleware = () => (next) => (action) => {
 const cashFlowReducer = combineReducers({
   expense: expenseReducer,
   revenue: revenueReducer,
+  category: entriesCategoryReducer,
 });
 
 export const store = configureStore({
