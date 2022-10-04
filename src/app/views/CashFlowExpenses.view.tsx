@@ -19,10 +19,10 @@ export default function CashFlowExpensesView() {
   return (
     <>
       <Modal
-        closeIcon={<></>}
         visible={showCategoryModal}
         onCancel={closeCategoryModal}
         footer={null}
+        title={'Gerir Categorias'}
       >
         <EntryCategoryManager type={'EXPENSE'} />
       </Modal>
