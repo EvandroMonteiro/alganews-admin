@@ -20,10 +20,17 @@ export default function useEntriesCategories() {
     [dispatch]
   );
 
+  const deleteCategory = useCallback(
+    (categoryId: number) =>
+      dispatch(CategoryActions.deleteCategory(categoryId)).unwrap(),
+    [dispatch]
+  );
+
   return {
     expenses,
     revenues,
     fetchCategories,
     createCategory,
+    deleteCategory,
   };
 }
