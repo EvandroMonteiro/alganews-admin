@@ -13,11 +13,16 @@ import entriesCategoryReducer from './EntriesCategory.slice';
 
 const observeActions: Middleware = () => (next) => (action) => {
   if (isRejected(action)) {
-    notification.error({
-      message: action.error.message,
-    });
-  }
+    const ignoredAction = ['cash-flow/categories/createCategory/rejected'];
 
+    const shouldNotify = !ignoredAction.includes(action.type);
+
+    if (shouldNotify) {
+      notification.error({
+        message: action.error.message,
+      });
+    }
+  }
   next(action);
 };
 
@@ -33,8 +38,8 @@ export const store = configureStore({
     payment: PaymentReducer,
     cashFlow: cashFlowReducer,
   },
-  middleware: function (getDefaultMiddleware) {
-    return [...getDefaultMiddleware(), observeActions];
+  middleware: function (getDefaultMiddlewares) {
+    return getDefaultMiddlewares().concat(observeActions);
   },
 });
 
