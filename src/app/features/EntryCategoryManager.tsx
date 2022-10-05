@@ -1,4 +1,13 @@
-import { Button, Col, Form, Input, Modal, Row, Table } from 'antd';
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Modal,
+  notification,
+  Row,
+  Table,
+} from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
 import { useCallback, useEffect, useState } from 'react';
 import useEntriesCategories from '../../core/hooks/useEntriesCategories';
@@ -25,8 +34,16 @@ export default function EntryCategoryManager(props: {
         title={'Adicionar categoria'}
         visible={showCategoryModal}
         onCancel={closeCategoryModal}
+        destroyOnClose
       >
-        <CategoryForm />
+        <CategoryForm
+          onSuccess={() => {
+            closeCategoryModal();
+            notification.success({
+              message: 'Categoria cadastrada com sucesso',
+            });
+          }}
+        />
       </Modal>
       <Row justify={'space-between'} style={{ marginBottom: 16 }}>
         <Button>Atualizar Categorias</Button>
@@ -68,9 +85,25 @@ export default function EntryCategoryManager(props: {
   );
 }
 
-function CategoryForm() {
+function CategoryForm(props: { onSuccess: () => any }) {
+  const { onSuccess } = props;
+  const { createCategory } = useEntriesCategories();
+
+  const handleFormSubmit = useCallback(
+    async (form: CashFlow.CategoryInput) => {
+      const newCategoryDTO: CashFlow.CategoryInput = {
+        ...form,
+        type: 'EXPENSE',
+      };
+
+      await createCategory(newCategoryDTO);
+      onSuccess();
+    },
+    [createCategory, onSuccess]
+  );
+
   return (
-    <Form layout={'vertical'}>
+    <Form layout={'vertical'} onFinish={handleFormSubmit}>
       <Row justify={'end'}>
         <Col xs={24}>
           <Form.Item
