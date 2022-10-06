@@ -50,6 +50,18 @@ export const updateRevenue = createAsyncThunk(
   }
 );
 
+export const removeRevenue = createAsyncThunk(
+  'cash-flow/revenues/removeRevenue',
+  async (revenueId: number, { dispatch, rejectWithValue }) => {
+    try {
+      await CashFlowService.removeExistingEntry(revenueId);
+      await dispatch(getRevenues());
+    } catch (err) {
+      return rejectWithValue({ ...err });
+    }
+  }
+);
+
 export const getRevenues = createAsyncThunk(
   'cash-flow/revenues/getRevenues',
   async (_, { getState, dispatch }) => {
