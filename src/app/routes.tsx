@@ -31,6 +31,9 @@ export default function AppRoutes() {
           });
         }
       } else {
+        reason?.data?.objects.forEach((obj: { userMessage: string }) => {
+          message.error(obj.userMessage);
+        });
         notification.error({
           message: reason?.message || 'Houve um erro',
         });

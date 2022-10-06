@@ -25,9 +25,13 @@ const initialState: RevenueState = {
 
 export const createRevenue = createAsyncThunk(
   'cash-flow/revenues/createRevenue',
-  async (revenue: CashFlow.EntryInput, { dispatch }) => {
-    await CashFlowService.insertNewEntry(revenue);
-    await dispatch(getRevenues());
+  async (revenue: CashFlow.EntryInput, { dispatch, rejectWithValue }) => {
+    try {
+      await CashFlowService.insertNewEntry(revenue);
+      await dispatch(getRevenues());
+    } catch (err) {
+      return rejectWithValue({ ...err });
+    }
   }
 );
 
