@@ -6,7 +6,11 @@ import { useEffect } from 'react';
 import transformIntoBrl from '../../core/hooks/transformIntoBrl';
 import useCashFlow from '../../core/hooks/useCashFlow';
 
-export default function EntriesList() {
+interface EntriesListProps {
+  onEdit: (entryId: number) => any;
+}
+
+export default function EntriesList(props: EntriesListProps) {
   const {
     entries,
     fetching,
@@ -95,7 +99,12 @@ export default function EntriesList() {
                   icon={<DeleteOutlined />}
                   danger
                 />
-                <Button type={'text'} size={'small'} icon={<EditOutlined />} />
+                <Button
+                  type={'text'}
+                  size={'small'}
+                  icon={<EditOutlined />}
+                  onClick={() => props.onEdit(id)}
+                />
                 <Button type={'text'} size={'small'} icon={<EyeOutlined />} />
               </Space>
             );

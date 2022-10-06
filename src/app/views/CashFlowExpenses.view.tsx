@@ -25,6 +25,8 @@ const { Title, Text } = Typography;
 export default function CashFlowExpensesView() {
   const { selected, removeEntries } = useCashFlow('EXPENSE');
 
+  const [editingEntry, setEditingEntry] = useState<number | undefined>();
+
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
 
@@ -47,13 +49,17 @@ export default function CashFlowExpensesView() {
       </Modal>
       <Modal
         visible={showFormModal}
-        onCancel={closeFormModal}
+        onCancel={() => {
+          closeFormModal();
+          setEditingEntry(undefined);
+        }}
         footer={null}
         title={'Cadastrar Despesa'}
         destroyOnClose
       >
         <EntryForm
           type={'EXPENSE'}
+          editingEntry={editingEntry}
           onSuccess={() => {
             closeFormModal();
             notification.success({
@@ -110,7 +116,12 @@ export default function CashFlowExpensesView() {
 
       <Divider />
 
-      <EntriesList />
+      <EntriesList
+        onEdit={(id) => {
+          setEditingEntry(id);
+          openFormModal();
+        }}
+      />
     </>
   );
 }

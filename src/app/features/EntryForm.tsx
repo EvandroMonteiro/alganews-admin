@@ -7,10 +7,11 @@ import {
   Input,
   Row,
   Select,
+  Skeleton,
   Space,
 } from 'antd';
-import { CashFlow } from 'goodvandro-alganews-sdk';
-import { useCallback, useEffect, useMemo } from 'react';
+import { CashFlow, CashFlowService } from 'goodvandro-alganews-sdk';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import moment, { Moment } from 'moment';
 import CurrencyInput from '../components/CurrencyInput';
 import { useForm } from 'antd/lib/form/Form';
@@ -24,9 +25,16 @@ type EntryFormSubmit = Omit<CashFlow.EntryInput, 'transactedOn'> & {
 interface EntryFormProps {
   type: 'EXPENSE' | 'REVENUE';
   onSuccess: () => any;
+  editingEntry?: number | undefined;
 }
 
-export default function EntryForm({ type, onSuccess }: EntryFormProps) {
+export default function EntryForm({
+  type,
+  onSuccess,
+  editingEntry,
+}: EntryFormProps) {
+  const [loading, setLoading] = useState(false);
+
   const [form] = useForm();
   const { revenues, expenses, fetching, fetchCategories } =
     useEntriesCategories();
@@ -36,6 +44,19 @@ export default function EntryForm({ type, onSuccess }: EntryFormProps) {
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
+
+  useEffect(() => {
+    if (editingEntry) {
+      setLoading(true);
+      CashFlowService.getExistingEntry(editingEntry)
+        .then((entry) => ({
+          ...entry,
+          transactedOn: moment(entry.transactedOn),
+        }))
+        .then(form.setFieldsValue)
+        .finally(() => setLoading(false));
+    }
+  }, [editingEntry, form]);
 
   const categories = useMemo(
     () => (type === 'EXPENSE' ? expenses : revenues),
@@ -56,13 +77,20 @@ export default function EntryForm({ type, onSuccess }: EntryFormProps) {
     [type, createEntry, onSuccess]
   );
 
-  return (
+  return loading ? (
+    <>
+      <Skeleton />
+      <Skeleton title={false} />
+      <Skeleton title={false} />
+    </>
+  ) : (
     <Form
       autoComplete={'off'}
       form={form}
       layout={'vertical'}
       onFinish={handleFormSubmit}
     >
+      {editingEntry}
       <Row gutter={16}>
         <Col xs={24}>
           <Form.Item
@@ -123,7 +151,7 @@ export default function EntryForm({ type, onSuccess }: EntryFormProps) {
       <Divider style={{ marginTop: 0 }} />
       <Row justify={'end'}>
         <Space>
-          <Button>Cancelar </Button>
+          <Button> Cancelar </Button>
           <Button
             loading={fetchingEntries}
             type={'primary'}
