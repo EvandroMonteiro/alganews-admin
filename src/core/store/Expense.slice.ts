@@ -23,6 +23,14 @@ const initialState: ExpenseState = {
   selected: [],
 };
 
+export const createExpense = createAsyncThunk(
+  'cash-flow/expenses/createExpense',
+  async (expense: CashFlow.EntryInput, { dispatch }) => {
+    await CashFlowService.insertNewEntry(expense);
+    await dispatch(getExpenses());
+  }
+);
+
 export const getExpenses = createAsyncThunk(
   'cash-flow/expenses/getExpenses',
   async (_, { getState, dispatch }) => {
@@ -72,6 +80,7 @@ const expenseSlice = createSlice({
     const { error, loading, success } = getThunkStatus([
       getExpenses,
       removeEntriesInBatch,
+      createExpense,
     ]);
 
     builder
