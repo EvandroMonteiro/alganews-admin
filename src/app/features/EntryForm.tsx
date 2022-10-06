@@ -11,8 +11,8 @@ import {
 } from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
 import { useCallback, useEffect, useMemo } from 'react';
+import moment, { Moment } from 'moment';
 import CurrencyInput from '../components/CurrencyInput';
-import { Moment } from 'moment';
 import { useForm } from 'antd/lib/form/Form';
 import useEntriesCategories from '../../core/hooks/useEntriesCategories';
 import useCashFlow from '../../core/hooks/useCashFlow';
@@ -110,7 +110,13 @@ export default function EntryForm({ type, onSuccess }: EntryFormProps) {
             name={'transactedOn'}
             rules={[{ required: true, message: 'O campo é obrigatório' }]}
           >
-            <DatePicker format={'DD/MM/YYYY'} style={{ width: '100%' }} />
+            <DatePicker
+              format={'DD/MM/YYYY'}
+              style={{ width: '100%' }}
+              disabledDate={(date) => {
+                return date.isAfter(moment());
+              }}
+            />
           </Form.Item>
         </Col>
       </Row>
