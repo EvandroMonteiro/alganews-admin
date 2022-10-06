@@ -10,13 +10,13 @@ import {
   Skeleton,
   Space,
 } from 'antd';
-import { CashFlow, CashFlowService } from 'goodvandro-alganews-sdk';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import moment, { Moment } from 'moment';
-import CurrencyInput from '../components/CurrencyInput';
 import { useForm } from 'antd/lib/form/Form';
-import useEntriesCategories from '../../core/hooks/useEntriesCategories';
+import { CashFlow, CashFlowService } from 'goodvandro-alganews-sdk';
+import moment, { Moment } from 'moment';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import useCashFlow from '../../core/hooks/useCashFlow';
+import useEntriesCategories from '../../core/hooks/useEntriesCategories';
+import CurrencyInput from '../components/CurrencyInput';
 
 type EntryFormSubmit = Omit<CashFlow.EntryInput, 'transactedOn'> & {
   transactedOn: Moment;
@@ -39,7 +39,11 @@ export default function EntryForm({
   const { revenues, expenses, fetching, fetchCategories } =
     useEntriesCategories();
 
-  const { createEntry, fetching: fetchingEntries } = useCashFlow(type);
+  const {
+    createEntry,
+    fetching: fetchingEntries,
+    updateEntry,
+  } = useCashFlow(type);
 
   useEffect(() => {
     fetchCategories();
@@ -71,10 +75,12 @@ export default function EntryForm({
         type,
       };
 
-      await createEntry(newEntryDTO);
+      editingEntry
+        ? await updateEntry(editingEntry, newEntryDTO)
+        : await createEntry(newEntryDTO);
       onSuccess();
     },
-    [type, createEntry, onSuccess]
+    [type, createEntry, updateEntry, editingEntry, onSuccess]
   );
 
   return loading ? (
@@ -90,7 +96,6 @@ export default function EntryForm({
       layout={'vertical'}
       onFinish={handleFormSubmit}
     >
-      {editingEntry}
       <Row gutter={16}>
         <Col xs={24}>
           <Form.Item
@@ -157,7 +162,7 @@ export default function EntryForm({
             type={'primary'}
             htmlType={'submit'}
           >
-            Cadastrar despesa
+            {editingEntry ? 'Atualizar' : 'Cadastrar'} despesa
           </Button>
         </Space>
       </Row>
