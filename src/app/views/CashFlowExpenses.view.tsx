@@ -43,7 +43,7 @@ export default function CashFlowExpensesView() {
         title={'Cadastrar Despesa'}
         destroyOnClose
       >
-        <EntryForm />
+        <EntryForm type={'EXPENSE'} />
       </Modal>
       <Row justify={'space-between'} style={{ marginBottom: 16 }}>
         <DoubleConfirm
