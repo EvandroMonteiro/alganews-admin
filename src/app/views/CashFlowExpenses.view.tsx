@@ -23,6 +23,7 @@ export default function CashFlowExpensesView() {
         onCancel={closeCategoryModal}
         footer={null}
         title={'Gerir Categorias'}
+        destroyOnClose
       >
         <EntryCategoryManager type={'EXPENSE'} />
       </Modal>

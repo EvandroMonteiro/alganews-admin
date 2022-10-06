@@ -17,7 +17,7 @@ import { DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
 export default function EntryCategoryManager(props: {
   type: 'EXPENSE' | 'REVENUE';
 }) {
-  const { expenses, fetchCategories, revenues, deleteCategory } =
+  const { expenses, fetchCategories, fetching, revenues, deleteCategory } =
     useEntriesCategories();
 
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -48,12 +48,13 @@ export default function EntryCategoryManager(props: {
         />
       </Modal>
       <Row justify={'space-between'} style={{ marginBottom: 16 }}>
-        <Button>Atualizar Categorias</Button>
+        <Button onClick={fetchCategories}>Atualizar Categorias</Button>
         <Button onClick={openCategoryModal}>Adicionar Categoria</Button>
       </Row>
       <Table<CashFlow.CategorySummary>
         size='small'
         rowKey={'id'}
+        loading={fetching}
         dataSource={props.type === 'EXPENSE' ? expenses : revenues}
         columns={[
           {
