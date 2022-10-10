@@ -19,6 +19,7 @@ import DoubleConfirm from '../components/DoubleConfirm';
 import { useCallback, useState } from 'react';
 import EntryCategoryManager from '../features/EntryCategoryManager';
 import EntryForm from '../features/EntryForm';
+import EntryDetails from '../features/EntryDetails';
 
 const { Title, Text } = Typography;
 
@@ -27,14 +28,20 @@ export default function CashFlowExpensesView() {
 
   const [editingEntry, setEditingEntry] = useState<number | undefined>();
 
+  const [detailedEntry, setDetailedEntry] = useState<number | undefined>();
+
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const openCategoryModal = useCallback(() => setShowCategoryModal(true), []);
   const closeCategoryModal = useCallback(() => setShowCategoryModal(false), []);
 
   const openFormModal = useCallback(() => setShowFormModal(true), []);
   const closeFormModal = useCallback(() => setShowFormModal(false), []);
+
+  const openDetailsModal = useCallback(() => setShowDetailsModal(true), []);
+  const closeDetailsModal = useCallback(() => setShowDetailsModal(false), []);
 
   return (
     <>
@@ -67,6 +74,17 @@ export default function CashFlowExpensesView() {
             });
           }}
         />
+      </Modal>
+      <Modal
+        visible={showDetailsModal}
+        onCancel={() => {
+          closeDetailsModal();
+        }}
+        footer={null}
+        title={'Detalhes da Despesa'}
+        destroyOnClose
+      >
+        {detailedEntry && <EntryDetails entryId={detailedEntry} />}
       </Modal>
       <Row justify={'space-between'} style={{ marginBottom: 16 }}>
         <DoubleConfirm
@@ -120,6 +138,10 @@ export default function CashFlowExpensesView() {
         onEdit={(id) => {
           setEditingEntry(id);
           openFormModal();
+        }}
+        onDetail={(id) => {
+          setDetailedEntry(id);
+          openDetailsModal();
         }}
       />
     </>
