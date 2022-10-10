@@ -39,6 +39,7 @@ export default function EntryCategoryManager(props: {
         destroyOnClose
       >
         <CategoryForm
+          type={props.type}
           onSuccess={() => {
             closeCategoryModal();
             notification.success({
@@ -99,21 +100,24 @@ export default function EntryCategoryManager(props: {
   );
 }
 
-function CategoryForm(props: { onSuccess: () => any }) {
+function CategoryForm(props: {
+  onSuccess: () => any;
+  type: 'EXPENSE' | 'REVENUE';
+}) {
   const { onSuccess } = props;
-  const { createCategory } = useEntriesCategories();
+  const { createCategory, fetching } = useEntriesCategories();
 
   const handleFormSubmit = useCallback(
     async (form: CashFlow.CategoryInput) => {
       const newCategoryDTO: CashFlow.CategoryInput = {
         ...form,
-        type: 'EXPENSE',
+        type: props.type,
       };
 
       await createCategory(newCategoryDTO);
       onSuccess();
     },
-    [createCategory, onSuccess]
+    [createCategory, onSuccess, props.type]
   );
 
   return (
@@ -134,6 +138,7 @@ function CategoryForm(props: { onSuccess: () => any }) {
           type={'primary'}
           htmlType={'submit'}
           icon={<CheckCircleOutlined />}
+          loading={fetching}
         >
           Cadastrar categoria
         </Button>
