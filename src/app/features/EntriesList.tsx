@@ -2,7 +2,8 @@ import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Space, Table, Tag, Tooltip } from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import transformIntoBrl from '../../core/hooks/transformIntoBrl';
 import useCashFlow from '../../core/hooks/useCashFlow';
 import DoubleConfirm from '../components/DoubleConfirm';
@@ -13,20 +14,34 @@ interface EntriesListProps {
 }
 
 export default function EntriesList(props: EntriesListProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const {
     entries,
     fetching,
     fetchEntries,
     setQuery,
-    query,
     selected,
     setSelected,
     removeEntry,
   } = useCashFlow('EXPENSE');
 
+  const didMount = useRef(false);
+
   useEffect(() => {
     fetchEntries();
   }, [fetchEntries]);
+
+  useEffect(() => {
+    if (didMount.current) {
+      const params = new URLSearchParams(location.search);
+      const yearMonth = params.get('yearMonth');
+      if (yearMonth) setQuery({ yearMonth });
+    } else {
+      didMount.current = true;
+    }
+  }, [location.search, setQuery]);
 
   return (
     <Table<CashFlow.EntrySummary>
@@ -69,10 +84,10 @@ export default function EntriesList(props: EntriesListProps) {
                   format={'YYYY - MMMM'}
                   allowClear={false}
                   onChange={(date) => {
-                    setQuery({
-                      ...query,
-                      yearMonth:
-                        date?.format('YYYY-MM') || moment().format('YYYY-MM'),
+                    navigate({
+                      search: `yearMonth=${
+                        date?.format('YYYY-MM') || moment().format('YYYY-MM')
+                      }`,
                     });
                   }}
                 />
