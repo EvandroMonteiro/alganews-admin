@@ -1,12 +1,22 @@
 import { DeleteOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
-import { Button, Card, DatePicker, Space, Table, Tag, Tooltip } from 'antd';
+import {
+  Button,
+  Card,
+  DatePicker,
+  Descriptions,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+} from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import transformIntoBrl from '../../core/hooks/transformIntoBrl';
 import useCashFlow from '../../core/hooks/useCashFlow';
 import DoubleConfirm from '../components/DoubleConfirm';
+import Forbidden from '../components/Forbidden';
 
 interface EntriesListProps {
   onEdit: (entryId: number) => any;
@@ -30,10 +40,18 @@ export default function EntriesList(props: EntriesListProps) {
     removeEntry,
   } = useCashFlow(type);
 
+  const [forbidden, setForbidden] = useState(false);
+
   const didMount = useRef(false);
 
   useEffect(() => {
-    fetchEntries();
+    fetchEntries().catch((err) => {
+      if (err?.data?.status === 403) {
+        setForbidden(true);
+        return;
+      }
+      throw err;
+    });
   }, [fetchEntries]);
 
   useEffect(() => {
@@ -45,6 +63,8 @@ export default function EntriesList(props: EntriesListProps) {
       didMount.current = true;
     }
   }, [location.search, setQuery]);
+
+  if (forbidden) return <Forbidden />;
 
   return (
     <Table<CashFlow.EntrySummary>
@@ -60,10 +80,80 @@ export default function EntriesList(props: EntriesListProps) {
       }}
       columns={[
         {
+          dataIndex: 'id',
+          title: type === 'EXPENSE' ? 'Despesas' : 'Receitas',
+          responsive: ['xs'],
+          render(_, record) {
+            return (
+              <>
+                <Descriptions column={1}>
+                  <Descriptions.Item label={'Descrição'}>
+                    {record.description}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Categoria'}>
+                    {record.category.name}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Data'}>
+                    {moment(record.transactedOn).format('DD/MM/YYYY')}
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Valor'}>
+                    {transformIntoBrl(record.amount)}
+                  </Descriptions.Item>
+                </Descriptions>
+                <Space>
+                  <DoubleConfirm
+                    popConfirmTitle={
+                      type === 'EXPENSE'
+                        ? 'Remover despesa?'
+                        : 'Remover receita?'
+                    }
+                    modalTitle={
+                      type === 'EXPENSE'
+                        ? 'Deseja mesmo remover essa despesa?'
+                        : 'Deseja mesmo remover esta receita?'
+                    }
+                    modalContent={
+                      type === 'EXPENSE'
+                        ? 'Remover uma despesa pode gerar um impacto negativo no gráfico de receitas e despesas. Esta ação é irreversível'
+                        : 'Remover uma receita pode gerar um impacto negativo no gráfico de receitas e despesas. Esta ação é irreversível'
+                    }
+                    onConfirm={async () => {
+                      await removeEntry(record.id);
+                    }}
+                    disabled={!record.canBeDeleted}
+                  >
+                    <Button
+                      type={'text'}
+                      size={'small'}
+                      icon={<DeleteOutlined />}
+                      danger
+                    />
+                  </DoubleConfirm>
+                  <Button
+                    type={'text'}
+                    size={'small'}
+                    icon={<EditOutlined />}
+                    onClick={() => props.onEdit(record.id)}
+                  />
+                  <Button
+                    type={'text'}
+                    size={'small'}
+                    icon={<EyeOutlined />}
+                    onClick={() => {
+                      props.onDetail(record.id);
+                    }}
+                  />
+                </Space>
+              </>
+            );
+          },
+        },
+        {
           dataIndex: 'description',
           title: 'Descrição',
           width: 300,
           ellipsis: true,
+          responsive: ['sm'],
           render(description: CashFlow.EntrySummary['description']) {
             return <Tooltip title={description}>{description}</Tooltip>;
           },
@@ -72,6 +162,8 @@ export default function EntriesList(props: EntriesListProps) {
           dataIndex: 'category',
           title: 'Categoria',
           align: 'center',
+          width: 120,
+          responsive: ['sm'],
           render(category: CashFlow.EntrySummary['category']) {
             return <Tag>{category.name}</Tag>;
           },
@@ -80,6 +172,8 @@ export default function EntriesList(props: EntriesListProps) {
           dataIndex: 'transactedOn',
           title: 'Data',
           align: 'center',
+          responsive: ['sm'],
+          width: 120,
           filterDropdown() {
             return (
               <Card>
@@ -105,12 +199,16 @@ export default function EntriesList(props: EntriesListProps) {
           dataIndex: 'amount',
           title: 'Valor',
           align: 'right',
+          width: 120,
+          responsive: ['sm'],
           render: transformIntoBrl,
         },
         {
           dataIndex: 'id',
           title: 'Ações',
           align: 'right',
+          responsive: ['sm'],
+          width: 120,
           render(id: number, record) {
             return (
               <Space>
@@ -137,6 +235,7 @@ export default function EntriesList(props: EntriesListProps) {
                     type={'text'}
                     size={'small'}
                     icon={<DeleteOutlined />}
+                    disabled={!record.canBeDeleted}
                     danger
                   />
                 </DoubleConfirm>
@@ -144,6 +243,7 @@ export default function EntriesList(props: EntriesListProps) {
                   type={'text'}
                   size={'small'}
                   icon={<EditOutlined />}
+                  disabled={!record.canBeEdited}
                   onClick={() => props.onEdit(id)}
                 />
                 <Button
