@@ -1,7 +1,8 @@
 import { message, notification } from 'antd';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
 import { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import AuthService from '../auth/Authorization.service';
 import CashFlowExpensesView from './views/CashFlowExpenses.view';
 import CashFlowRevenuesView from './views/CashFlowRevenues.view';
 import HomeView from './views/Home.view';
@@ -14,6 +15,8 @@ import UserEditView from './views/UserEdit.view';
 import UserListView from './views/UserList.view';
 
 export default function AppRoutes() {
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.onunhandledrejection = ({ reason }) => {
       if (reason instanceof CustomError) {
@@ -26,14 +29,15 @@ export default function AppRoutes() {
             message: reason.message,
             description:
               reason.data?.detail === 'Network Error'
-                ? 'Erro de rede'
+                ? 'Erro na rede'
                 : reason.data?.detail,
           });
         }
       } else {
-        reason?.data?.objects.forEach((obj: { userMessage: string }) => {
-          message.error(obj.userMessage);
+        reason?.data?.objects?.forEach((object: { userMessage: string }) => {
+          message.error(object.userMessage);
         });
+
         notification.error({
           message: reason?.message || 'Houve um erro',
         });
@@ -44,6 +48,49 @@ export default function AppRoutes() {
       window.onunhandledrejection = null;
     };
   }, []);
+
+  useEffect(() => {
+    async function identify() {
+      const isInAuthorizationRoute = window.location.pathname === '/authorize';
+      const code = new URLSearchParams(window.location.search).get('code');
+
+      const codeVerifier = AuthService.getCodeVerifier();
+      const accessToken = AuthService.getAccessToken();
+
+      if (!accessToken && !isInAuthorizationRoute) {
+        AuthService.imperativelySendToLoginScreen();
+      }
+
+      if (isInAuthorizationRoute) {
+        if (!code) {
+          notification.error({
+            message: 'Código não foi informado',
+          });
+          return;
+        }
+
+        if (!codeVerifier) {
+          // necessário fazer logout
+          return;
+        }
+
+        // busca o primeiro token de acesso
+        const { access_token, refresh_token } =
+          await AuthService.getFirstAccessToken({
+            code,
+            codeVerifier,
+            redirectUri: 'http://localhost:3000/authorize',
+          });
+
+        AuthService.setAccessToken(access_token);
+        AuthService.setRefreshToken(refresh_token);
+
+        navigate('/');
+      }
+    }
+
+    identify();
+  }, [navigate]);
 
   return (
     <Routes>

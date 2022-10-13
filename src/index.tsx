@@ -11,6 +11,7 @@ import DefaultLayout from './app/layouts/Default/Default.layout';
 import AppRoutes from './app/routes';
 import { store } from './core/store';
 import reportWebVitals from './reportWebVitals';
+import './auth/httpConfig';
 
 import './index.less';
 

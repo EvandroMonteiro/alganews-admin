@@ -16,10 +16,13 @@
     "antd": "^4.22.4",
     "antd-img-crop": "^4.2.4",
     "antd-mask-input": "^2.0.7",
+    "axios": "0.21.1",
     "craco-less": "^2.0.0",
     "date-fns": "^2.29.1",
-    "goodvandro-alganews-sdk": "^3.2.3",
+    "goodvandro-alganews-sdk": "^4.0.0",
     "lodash.debounce": "^4.0.8",
+    "pkce-challenge": "^3.0.0",
+    "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.2",
@@ -55,6 +58,7 @@
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.7",
+    "@types/qs": "^6.9.7",
     "@types/react-router-dom": "^5.3.3"
   }
 }
