@@ -20,6 +20,7 @@
     "craco-less": "^2.0.0",
     "date-fns": "^2.29.1",
     "goodvandro-alganews-sdk": "^4.0.0",
+    "jwt-decode": "^3.1.2",
     "lodash.debounce": "^4.0.8",
     "pkce-challenge": "^3.0.0",
     "qs": "^6.11.0",
