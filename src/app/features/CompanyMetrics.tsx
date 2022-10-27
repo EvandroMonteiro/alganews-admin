@@ -9,6 +9,7 @@ import parseISO from 'date-fns/parseISO';
 import { ForbiddenError } from 'goodvandro-alganews-sdk/dist/errors';
 import Card from 'antd/lib/card/Card';
 import { Space, Typography } from 'antd';
+import Forbidden from '../components/Forbidden';
 
 export default function CompanyMetrics() {
   const [data, setData] = useState<
@@ -34,22 +35,7 @@ export default function CompanyMetrics() {
       });
   }, []);
 
-  if (forbidden)
-    return (
-      <Card style={{ minHeight: 256, display: 'flex', alignItems: 'center' }}>
-        <Space direction={'vertical'}>
-          <Space align={'center'}>
-            <LockFilled style={{ fontSize: 32 }} />
-            <Typography.Title style={{ margin: 0 }}>
-              Acesso negado
-            </Typography.Title>
-          </Space>
-          <Typography.Paragraph>
-            Você não tem permissão para acessar estes dados.
-          </Typography.Paragraph>
-        </Space>
-      </Card>
-    );
+  if (forbidden) return <Forbidden minHeight={256} />;
 
   const config = {
     data,
