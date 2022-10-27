@@ -1,18 +1,21 @@
 import {
   Button,
-  Col,
-  Form,
-  Input,
-  Modal,
-  notification,
-  Popconfirm,
   Row,
   Table,
+  Form,
+  Input,
+  Col,
+  notification,
+  Popconfirm,
 } from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
-import { useCallback, useEffect, useState } from 'react';
-import useEntriesCategories from '../../core/hooks/useEntriesCategories';
+import { useEffect } from 'react';
 import { DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import useEntriesCategories from '../../core/hooks/useEntriesCategories';
+import Modal from 'antd/lib/modal/Modal';
+import { useState } from 'react';
+import { useCallback } from 'react';
+import Forbidden from '../components/Forbidden';
 
 export default function EntryCategoryManager(props: {
   type: 'EXPENSE' | 'REVENUE';
@@ -20,28 +23,38 @@ export default function EntryCategoryManager(props: {
   const { expenses, fetchCategories, fetching, revenues, deleteCategory } =
     useEntriesCategories();
 
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showCreationModal, setShowCreationModal] = useState(false);
 
-  const openCategoryModal = useCallback(() => setShowCategoryModal(true), []);
-  const closeCategoryModal = useCallback(() => setShowCategoryModal(false), []);
+  const openCreationModal = useCallback(() => setShowCreationModal(true), []);
+  const closeCreationModal = useCallback(() => setShowCreationModal(false), []);
+
+  const [forbidden, setForbidden] = useState(false);
 
   useEffect(() => {
-    fetchCategories();
+    console.log('fetching categories');
+    fetchCategories().catch((err) => {
+      if (err?.data?.status === 403) {
+        setForbidden(true);
+        return;
+      }
+      throw err;
+    });
   }, [fetchCategories]);
+
+  if (forbidden) return <Forbidden />;
 
   return (
     <>
       <Modal
         footer={null}
         title={'Adicionar categoria'}
-        visible={showCategoryModal}
-        onCancel={closeCategoryModal}
+        visible={showCreationModal}
+        onCancel={closeCreationModal}
         destroyOnClose
       >
         <CategoryForm
-          type={props.type}
           onSuccess={() => {
-            closeCategoryModal();
+            closeCreationModal();
             notification.success({
               message: 'Categoria cadastrada com sucesso',
             });
@@ -49,8 +62,8 @@ export default function EntryCategoryManager(props: {
         />
       </Modal>
       <Row justify={'space-between'} style={{ marginBottom: 16 }}>
-        <Button onClick={fetchCategories}>Atualizar Categorias</Button>
-        <Button onClick={openCategoryModal}>Adicionar Categoria</Button>
+        <Button onClick={fetchCategories}>Atualizar categorias</Button>
+        <Button onClick={openCreationModal}>Adicionar categoria</Button>
       </Row>
       <Table<CashFlow.CategorySummary>
         size='small'
@@ -64,7 +77,7 @@ export default function EntryCategoryManager(props: {
           },
           {
             dataIndex: 'totalEntries',
-            title: 'Vínculo',
+            title: 'Vínculos',
             align: 'right',
           },
           {
@@ -74,12 +87,12 @@ export default function EntryCategoryManager(props: {
             render(id: number, record) {
               return (
                 <Popconfirm
-                  title={'Tem certeza que deseja excluir esta categoria?'}
+                  title={'Remover categoria?'}
                   disabled={!record.canBeDeleted}
                   onConfirm={async () => {
                     await deleteCategory(id);
                     notification.success({
-                      message: 'Categoria excluída com sucesso',
+                      message: 'Categoria removida com sucesso',
                     });
                   }}
                 >
@@ -100,24 +113,22 @@ export default function EntryCategoryManager(props: {
   );
 }
 
-function CategoryForm(props: {
-  onSuccess: () => any;
-  type: 'EXPENSE' | 'REVENUE';
-}) {
+function CategoryForm(props: { onSuccess: () => any }) {
   const { onSuccess } = props;
-  const { createCategory, fetching } = useEntriesCategories();
+
+  const { createCategory } = useEntriesCategories();
 
   const handleFormSubmit = useCallback(
     async (form: CashFlow.CategoryInput) => {
       const newCategoryDTO: CashFlow.CategoryInput = {
         ...form,
-        type: props.type,
+        type: 'EXPENSE',
       };
 
       await createCategory(newCategoryDTO);
       onSuccess();
     },
-    [createCategory, onSuccess, props.type]
+    [createCategory, onSuccess]
   );
 
   return (
@@ -138,7 +149,6 @@ function CategoryForm(props: {
           type={'primary'}
           htmlType={'submit'}
           icon={<CheckCircleOutlined />}
-          loading={fetching}
         >
           Cadastrar categoria
         </Button>

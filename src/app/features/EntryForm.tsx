@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import useCashFlow from '../../core/hooks/useCashFlow';
 import useEntriesCategories from '../../core/hooks/useEntriesCategories';
 import CurrencyInput from '../components/CurrencyInput';
+import Forbidden from '../components/Forbidden';
 
 type EntryFormSubmit = Omit<CashFlow.EntryInput, 'transactedOn'> & {
   transactedOn: Moment;
@@ -45,8 +46,16 @@ export default function EntryForm({
     updateEntry,
   } = useCashFlow(type);
 
+  const [forbidden, setForbidden] = useState(false);
+
   useEffect(() => {
-    fetchCategories();
+    fetchCategories().catch((err) => {
+      if (err?.data?.status === 403) {
+        setForbidden(true);
+        return;
+      }
+      throw err;
+    });
   }, [fetchCategories]);
 
   useEffect(() => {
@@ -82,6 +91,8 @@ export default function EntryForm({
     },
     [type, createEntry, updateEntry, editingEntry, onSuccess]
   );
+
+  if (forbidden) return <Forbidden />;
 
   return loading ? (
     <>
