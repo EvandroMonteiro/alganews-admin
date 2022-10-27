@@ -16,10 +16,11 @@ import confirm from 'antd/lib/modal/confirm';
 import { SorterResult } from 'antd/lib/table/interface';
 import { Payment } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import usePayments from '../../core/hooks/usePayments';
 import DoubleConfirm from '../components/DoubleConfirm';
+import Forbidden from '../components/Forbidden';
 
 export default function PaymentListView() {
   const { xs } = useBreakpoint();
@@ -35,9 +36,19 @@ export default function PaymentListView() {
     deleteExistingPayment,
   } = usePayments();
 
+  const [forbidden, setForbidden] = useState(false);
+
   useEffect(() => {
-    fetchPayments();
+    fetchPayments().catch((err) => {
+      if (err?.data?.status === 403) {
+        setForbidden(true);
+        return;
+      }
+      throw err;
+    });
   }, [fetchPayments]);
+
+  if (forbidden) return <Forbidden />;
 
   return (
     <>
