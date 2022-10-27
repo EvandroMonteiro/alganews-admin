@@ -6078,10 +6078,10 @@ globby@^11.0.4, globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-goodvandro-alganews-sdk@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/goodvandro-alganews-sdk/-/goodvandro-alganews-sdk-4.0.0.tgz#870ba385b98c6b74bc76be2091cdd51acca54b29"
-  integrity sha512-5KhJ7KXURwTfaYrE2+Bg+ZMLHhLWoW+USRrBIFJPYf237NuKA6e/QsI0pzIG0g6uyWZRcpVCFphoUFLcWtEC0g==
+goodvandro-alganews-sdk@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/goodvandro-alganews-sdk/-/goodvandro-alganews-sdk-6.0.0.tgz#701366252c533c4c9fd1c985bfa264ed95fb0b06"
+  integrity sha512-RpA5sMpmFpTDyWwHcOlrQHjpmgd37Yr0fEKz0J7kKc0A3jbBBf3Mjyle1MW0CB9TrPI0OvNZYMcapJabcNqAwg==
   dependencies:
     axios "0.21.1"
     date-fns "^2.28.0"

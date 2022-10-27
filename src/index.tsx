@@ -21,17 +21,17 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <React.StrictMode>
-    <ConfigProvider locale={ptBR}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <DefaultLayout>
-            <AppRoutes />
-          </DefaultLayout>
-        </BrowserRouter>
-      </Provider>
-    </ConfigProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <ConfigProvider locale={ptBR}>
+    <Provider store={store}>
+      <BrowserRouter>
+        <DefaultLayout>
+          <AppRoutes />
+        </DefaultLayout>
+      </BrowserRouter>
+    </Provider>
+  </ConfigProvider>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

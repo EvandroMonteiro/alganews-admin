@@ -53,5 +53,7 @@ Service.setResponseInterceptors(
       // retorna uma chamada do axios com essa requisição
       return axios(originalRequest);
     }
+
+    throw error;
   }
 );
