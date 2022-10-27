@@ -1,8 +1,11 @@
 import { message, notification } from 'antd';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
+import jwtDecode from 'jwt-decode';
 import { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Authentication } from '../auth/Auth';
 import AuthService from '../auth/Authorization.service';
+import useAuth from '../core/hooks/useAuth';
 import CashFlowExpensesView from './views/CashFlowExpenses.view';
 import CashFlowRevenuesView from './views/CashFlowRevenues.view';
 import HomeView from './views/Home.view';
@@ -16,6 +19,8 @@ import UserListView from './views/UserList.view';
 
 export default function AppRoutes() {
   const navigate = useNavigate();
+
+  const { fetchUser } = useAuth();
 
   useEffect(() => {
     window.onunhandledrejection = ({ reason }) => {
@@ -87,10 +92,16 @@ export default function AppRoutes() {
 
         navigate('/');
       }
+
+      if (accessToken) {
+        const decodedToken: Authentication.AccessTokenDecodedBody =
+          jwtDecode(accessToken);
+        fetchUser(decodedToken['alganews:user_id']);
+      }
     }
 
     identify();
-  }, [navigate]);
+  }, [fetchUser, navigate]);
 
   return (
     <Routes>

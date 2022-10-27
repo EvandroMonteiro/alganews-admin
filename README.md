@@ -45,5 +45,5 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-Username: email.teste.debora@gmail.com
+Username: email.teste.debora@gmail.com, joao.ger@alganews.com.br
 Password: alganews
