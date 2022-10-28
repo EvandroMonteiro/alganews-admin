@@ -1,4 +1,4 @@
-import { Avatar, Button, Dropdown, Layout, Menu, Row, Tag } from 'antd';
+import { Avatar, Dropdown, Layout, Menu, Row, Tag } from 'antd';
 import Meta from 'antd/lib/card/Meta';
 import logo from '../../../assets/logo.svg';
 import useAuth from '../../../core/hooks/useAuth';
