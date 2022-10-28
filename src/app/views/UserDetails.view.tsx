@@ -21,11 +21,7 @@ import confirm from 'antd/lib/modal/confirm';
 import { Post } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import {
-  Link,
-  Navigate,
-  useParams,
-} from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import usePageTitle from '../../core/hooks/usePageTitle';
 import usePosts from '../../core/hooks/usePosts';
 import useUser from '../../core/hooks/useUser';
@@ -38,8 +34,7 @@ export default function UserDetailsView() {
   const [page, setPage] = useState(0);
   const { lg } = useBreakpoint();
 
-  const { user, fetchUser, notFound, toggleUserStatus } =
-    useUser();
+  const { user, fetchUser, notFound, toggleUserStatus } = useUser();
 
   const {
     fetchUserPosts,
@@ -50,17 +45,14 @@ export default function UserDetailsView() {
   } = usePosts();
 
   useEffect(() => {
-    if (!isNaN(Number(params.id)))
-      fetchUser(Number(params.id));
+    if (!isNaN(Number(params.id))) fetchUser(Number(params.id));
   }, [fetchUser, params.id]);
 
   useEffect(() => {
-    if (user?.role === 'EDITOR')
-      fetchUserPosts(user.id, page);
+    if (user?.role === 'EDITOR') fetchUserPosts(user.id, page);
   }, [fetchUserPosts, user, page]);
 
-  if (isNaN(Number(params.id)))
-    return <Navigate to='/users' replace={true} />;
+  if (isNaN(Number(params.id))) return <Navigate to='/users' replace={true} />;
 
   if (notFound)
     return (
@@ -88,9 +80,7 @@ export default function UserDetailsView() {
           direction={'vertical'}
           align={lg ? 'start' : 'center'}
         >
-          <Typography.Title level={2}>
-            {user.name}
-          </Typography.Title>
+          <Typography.Title level={2}>{user.name}</Typography.Title>
           <Typography.Paragraph
             style={{
               textAlign: lg ? 'left' : 'center',
@@ -103,11 +93,13 @@ export default function UserDetailsView() {
           </Typography.Paragraph>
           <Space>
             <Link to={`/users/edit/${user.id}`}>
-              <Button type={'primary'}>
-                Editar perfil
-              </Button>
+              <Button type={'primary'}>Editar perfil</Button>
             </Link>
             <Popconfirm
+              disabled={
+                (user.active && !user.canBeDeactivated) ||
+                (!user.active && !user.canBeActivated)
+              }
               title={
                 user.active
                   ? `Desabilitar ${user.name}`
@@ -115,11 +107,7 @@ export default function UserDetailsView() {
               }
               onConfirm={() => {
                 confirm({
-                  icon: (
-                    <WarningFilled
-                      style={{ color: '#09f' }}
-                    />
-                  ),
+                  icon: <WarningFilled style={{ color: '#09f' }} />,
                   title: `Tem certeza que deseja ${
                     user.active
                       ? `desabilitar ${user.name}?`
@@ -136,7 +124,13 @@ export default function UserDetailsView() {
                 });
               }}
             >
-              <Button type={'primary'}>
+              <Button
+                type={'primary'}
+                disabled={
+                  (user.active && !user.canBeDeactivated) ||
+                  (!user.active && !user.canBeActivated)
+                }
+              >
                 {user.active ? 'Desabilitar' : 'Habilitar'}
               </Button>
             </Popconfirm>
@@ -146,19 +140,11 @@ export default function UserDetailsView() {
       <Divider />
       {!!user.skills?.length && (
         <Col xs={24} lg={12}>
-          <Space
-            direction='vertical'
-            style={{ width: '100%' }}
-          >
+          <Space direction='vertical' style={{ width: '100%' }}>
             {user.skills?.map((skill) => (
               <div key={skill.name}>
-                <Typography.Text>
-                  {skill.name}
-                </Typography.Text>
-                <Progress
-                  percent={skill.percentage}
-                  success={{ percent: 0 }}
-                />
+                <Typography.Text>{skill.name}</Typography.Text>
+                <Progress percent={skill.percentage} success={{ percent: 0 }} />
               </div>
             ))}
           </Space>
@@ -203,26 +189,14 @@ export default function UserDetailsView() {
                         <Descriptions.Item label={'Título'}>
                           {element.title}
                         </Descriptions.Item>
-                        <Descriptions.Item
-                          label={'Criação'}
-                        >
-                          {moment(element.createdAt).format(
-                            'DD/MM/YYYY'
-                          )}
+                        <Descriptions.Item label={'Criação'}>
+                          {moment(element.createdAt).format('DD/MM/YYYY')}
                         </Descriptions.Item>
-                        <Descriptions.Item
-                          label={'Atualização'}
-                        >
-                          {moment(element.updatedAt).format(
-                            'DD/MM/YYYY'
-                          )}
+                        <Descriptions.Item label={'Atualização'}>
+                          {moment(element.updatedAt).format('DD/MM/YYYY')}
                         </Descriptions.Item>
-                        <Descriptions.Item
-                          label={'Publicado'}
-                        >
-                          <Switch
-                            checked={element.published}
-                          />
+                        <Descriptions.Item label={'Publicado'}>
+                          <Switch checked={element.published} />
                         </Descriptions.Item>
                       </Descriptions>
                     );
@@ -235,11 +209,7 @@ export default function UserDetailsView() {
                   width: 300,
                   responsive: ['sm'],
                   render(title: string) {
-                    return (
-                      <Tooltip title={title}>
-                        {title}
-                      </Tooltip>
-                    );
+                    return <Tooltip title={title}>{title}</Tooltip>;
                   },
                 },
                 {
@@ -248,8 +218,7 @@ export default function UserDetailsView() {
                   width: 180,
                   align: 'center',
                   responsive: ['sm'],
-                  render: (item) =>
-                    moment(item).format('DD/MM/YYYY'),
+                  render: (item) => moment(item).format('DD/MM/YYYY'),
                 },
                 {
                   dataIndex: 'updatedAt',
@@ -258,9 +227,7 @@ export default function UserDetailsView() {
                   align: 'center',
                   responsive: ['sm'],
                   render: (item) =>
-                    moment(item).format(
-                      'DD/MM/YYYY \\à\\s hh:mm'
-                    ),
+                    moment(item).format('DD/MM/YYYY \\à\\s hh:mm'),
                 },
                 {
                   dataIndex: 'published',
@@ -274,11 +241,9 @@ export default function UserDetailsView() {
                         checked={published}
                         loading={loadingToggle}
                         onChange={() => {
-                          togglePostStatus(post).then(
-                            () => {
-                              fetchUserPosts(user.id);
-                            }
-                          );
+                          togglePostStatus(post).then(() => {
+                            fetchUserPosts(user.id);
+                          });
                         }}
                       />
                     );

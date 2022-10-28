@@ -14,7 +14,6 @@ import {
 import { ColumnProps } from 'antd/lib/table';
 import { format } from 'date-fns';
 import { User } from 'goodvandro-alganews-sdk';
-import { ForbiddenError } from 'goodvandro-alganews-sdk/dist/errors';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import useUsers from '../../core/hooks/useUsers';
