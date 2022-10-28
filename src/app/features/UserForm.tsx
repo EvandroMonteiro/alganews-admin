@@ -12,16 +12,8 @@ import {
   Button,
   notification,
 } from 'antd';
-import {
-  FileService,
-  User,
-  UserService,
-} from 'goodvandro-alganews-sdk';
-import React, {
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { FileService, User, UserService } from 'goodvandro-alganews-sdk';
+import React, { useCallback, useEffect, useState } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import ImageCrop from 'antd-img-crop';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
@@ -29,6 +21,7 @@ import MaskedInput from 'antd-mask-input';
 import { Moment } from 'moment';
 import { useNavigate } from 'react-router-dom';
 import CurrencyInput from '../components/CurrencyInput';
+import useAuth from '../../core/hooks/useAuth';
 
 const { TabPane } = Tabs;
 
@@ -36,10 +29,7 @@ type UserFormType = {
   createdAt: Moment;
   updatedAt: Moment;
   birthdate: Moment;
-} & Omit<
-  User.Detailed,
-  'createdAt' | 'updatedAt' | 'birthdate'
->;
+} & Omit<User.Detailed, 'createdAt' | 'updatedAt' | 'birthdate'>;
 
 interface UserFormProps {
   user?: UserFormType;
@@ -51,25 +41,22 @@ export default function UserForm(props: UserFormProps) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const [avatar, setAvatar] = useState(
-    props.user?.avatarUrls.default || ''
+  const [avatar, setAvatar] = useState(props.user?.avatarUrls.default || '');
+
+  const [activeTab, setActiveTab] = useState<'personal' | 'bankAccount'>(
+    'personal'
   );
 
-  const [activeTab, setActiveTab] = useState<
-    'personal' | 'bankAccount'
-  >('personal');
+  const { user: authenticatedUser } = useAuth();
 
   const [isEditorRole, setIsEditorRole] = useState(
     props.user?.role === 'EDITOR'
   );
 
-  const handleAvatarUpload = useCallback(
-    async (file: File) => {
-      const avatarSource = await FileService.upload(file);
-      setAvatar(avatarSource);
-    },
-    []
-  );
+  const handleAvatarUpload = useCallback(async (file: File) => {
+    const avatarSource = await FileService.upload(file);
+    setAvatar(avatarSource);
+  }, []);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -87,8 +74,7 @@ export default function UserForm(props: UserFormProps) {
         let personalDataErrors = 0;
 
         fields.errorFields.forEach(({ name }) => {
-          if (name.includes('bankAccount'))
-            bankAccountErrors++;
+          if (name.includes('bankAccount')) bankAccountErrors++;
           if (
             name.includes('location') ||
             name.includes('skills') ||
@@ -147,9 +133,7 @@ export default function UserForm(props: UserFormProps) {
                           str !== ''
                       )
                       .map((str) =>
-                        isNaN(Number(str))
-                          ? str
-                          : Number(str)
+                        isNaN(Number(str)) ? str : Number(str)
                       ) as string[],
                     errors: [error.userMessage],
                   };
@@ -177,12 +161,7 @@ export default function UserForm(props: UserFormProps) {
     >
       <Row gutter={24} align={'middle'}>
         <Col xs={24} lg={4}>
-          <ImageCrop
-            rotate
-            shape={'round'}
-            grid
-            aspect={1 / 1}
-          >
+          <ImageCrop rotate shape={'round'} grid aspect={1 / 1}>
             <Upload
               maxCount={1}
               onRemove={() => {
@@ -243,10 +222,7 @@ export default function UserForm(props: UserFormProps) {
               },
             ]}
           >
-            <DatePicker
-              style={{ width: '100%' }}
-              format={'DD/MM/YYYY'}
-            />
+            <DatePicker style={{ width: '100%' }} format={'DD/MM/YYYY'} />
           </Form.Item>
         </Col>
 
@@ -261,13 +237,11 @@ export default function UserForm(props: UserFormProps) {
               },
               {
                 max: 255,
-                message:
-                  'A biografia não pode ter mais de 255 caracteres',
+                message: 'A biografia não pode ter mais de 255 caracteres',
               },
               {
                 min: 10,
-                message:
-                  'A biografia não pode ter menos de 10 caracteres',
+                message: 'A biografia não pode ter menos de 10 caracteres',
               },
             ]}
           >
@@ -291,8 +265,7 @@ export default function UserForm(props: UserFormProps) {
               {
                 type: 'enum',
                 enum: ['EDITOR', 'ASSISTANT', 'MANAGER'],
-                message:
-                  'O perfil precisa ser editor, assistente ou gerente',
+                message: 'O perfil precisa ser editor, assistente ou gerente',
               },
             ]}
           >
@@ -301,14 +274,14 @@ export default function UserForm(props: UserFormProps) {
                 setIsEditorRole(value === 'EDITOR');
               }}
               placeholder={'Selecione um perfil'}
+              disabled={props.user && !props.user?.canSensitiveDataBeUpdated}
             >
-              <Select.Option value={'EDITOR'}>
-                Editor
-              </Select.Option>
-              <Select.Option value={'ASSISTANT'}>
-                Assistente
-              </Select.Option>
-              <Select.Option value={'MANAGER'}>
+              <Select.Option value={'EDITOR'}>Editor</Select.Option>
+              <Select.Option value={'ASSISTANT'}>Assistente</Select.Option>
+              <Select.Option
+                disabled={authenticatedUser?.role !== 'MANAGER'}
+                value={'MANAGER'}
+              >
                 Gerente
               </Select.Option>
             </Select>
@@ -332,6 +305,7 @@ export default function UserForm(props: UserFormProps) {
           >
             <Input
               type='email'
+              disabled={props.user && !props.user?.canSensitiveDataBeUpdated}
               placeholder={'E.g.: contato@joao.silva'}
             />
           </Form.Item>
@@ -345,16 +319,9 @@ export default function UserForm(props: UserFormProps) {
           <Tabs
             defaultActiveKey={'personal'}
             activeKey={activeTab}
-            onChange={(tab) =>
-              setActiveTab(
-                tab as 'personal' | 'bankAccount'
-              )
-            }
+            onChange={(tab) => setActiveTab(tab as 'personal' | 'bankAccount')}
           >
-            <TabPane
-              key={'personal'}
-              tab={'Dados pessoais'}
-            >
+            <TabPane key={'personal'} tab={'Dados pessoais'}>
               <Row gutter={24}>
                 <Col xs={24} lg={8}>
                   <Form.Item
@@ -389,9 +356,7 @@ export default function UserForm(props: UserFormProps) {
                       },
                     ]}
                   >
-                    <Input
-                      placeholder={'E.g.: Espírito Santo'}
-                    />
+                    <Input placeholder={'E.g.: Espírito Santo'} />
                   </Form.Item>
                 </Col>
                 <Col xs={24} lg={8}>
@@ -430,6 +395,9 @@ export default function UserForm(props: UserFormProps) {
                     <MaskedInput
                       mask='(00) 00000-0000'
                       placeholder={'(27) 99999-0000'}
+                      disabled={
+                        props.user && !props.user?.canSensitiveDataBeUpdated
+                      }
                     />
                   </Form.Item>
                 </Col>
@@ -463,14 +431,12 @@ export default function UserForm(props: UserFormProps) {
                         rules={[
                           {
                             required: true,
-                            message:
-                              'O campo é obrigatório',
+                            message: 'O campo é obrigatório',
                           },
                           {
                             type: 'number',
                             min: 0.01,
-                            message:
-                              'O valor mínimo é 1 centavo',
+                            message: 'O valor mínimo é 1 centavo',
                           },
                         ]}
                       >
@@ -491,16 +457,11 @@ export default function UserForm(props: UserFormProps) {
                             <Col xs={18} lg={6}>
                               <Form.Item
                                 label={'Habilidade'}
-                                name={[
-                                  'skills',
-                                  index,
-                                  'name',
-                                ]}
+                                name={['skills', index, 'name']}
                                 rules={[
                                   {
                                     required: true,
-                                    message:
-                                      'O campo é obrigatório',
+                                    message: 'O campo é obrigatório',
                                   },
                                   {
                                     max: 50,
@@ -508,51 +469,28 @@ export default function UserForm(props: UserFormProps) {
                                   },
                                 ]}
                               >
-                                <Input
-                                  placeholder={
-                                    'E.g.: Javascript'
-                                  }
-                                />
+                                <Input placeholder={'E.g.: Javascript'} />
                               </Form.Item>
                             </Col>
                             <Col xs={6} lg={2}>
                               <Form.Item
                                 label={'%'}
-                                name={[
-                                  'skills',
-                                  index,
-                                  'percentage',
-                                ]}
+                                name={['skills', index, 'percentage']}
                                 rules={[
                                   {
                                     required: true,
                                     message: '',
                                   },
                                   {
-                                    async validator(
-                                      field,
-                                      value
-                                    ) {
-                                      if (
-                                        isNaN(Number(value))
-                                      ) {
-                                        throw new Error(
-                                          'Apenas números'
-                                        );
+                                    async validator(field, value) {
+                                      if (isNaN(Number(value))) {
+                                        throw new Error('Apenas números');
                                       }
-                                      if (
-                                        Number(value) > 100
-                                      ) {
-                                        throw new Error(
-                                          'Máximo é 100'
-                                        );
+                                      if (Number(value) > 100) {
+                                        throw new Error('Máximo é 100');
                                       }
-                                      if (
-                                        Number(value) < 0
-                                      ) {
-                                        throw new Error(
-                                          'Mínimo é 0'
-                                        );
+                                      if (Number(value) < 0) {
+                                        throw new Error('Mínimo é 0');
                                       }
                                     },
                                   },
@@ -569,11 +507,7 @@ export default function UserForm(props: UserFormProps) {
               </Row>
             </TabPane>
 
-            <TabPane
-              key={'bankAccount'}
-              tab={'Dados bancários'}
-              forceRender
-            >
+            <TabPane key={'bankAccount'} tab={'Dados bancários'} forceRender>
               <Row gutter={24}>
                 <Col xs={24} lg={8}>
                   <Form.Item
@@ -662,11 +596,7 @@ export default function UserForm(props: UserFormProps) {
                       },
                     ]}
                   >
-                    <Select
-                      placeholder={
-                        'Selecione o tipo de conta'
-                      }
-                    >
+                    <Select placeholder={'Selecione o tipo de conta'}>
                       <Select.Option value={'SAVING'}>
                         Conta poupança
                       </Select.Option>
@@ -682,14 +612,8 @@ export default function UserForm(props: UserFormProps) {
         </Col>
         <Col lg={24}>
           <Row justify={'end'}>
-            <Button
-              loading={loading}
-              type={'primary'}
-              htmlType={'submit'}
-            >
-              {props.user
-                ? 'Atualizar usuário'
-                : 'Cadastrar usuário'}
+            <Button loading={loading} type={'primary'} htmlType={'submit'}>
+              {props.user ? 'Atualizar usuário' : 'Cadastrar usuário'}
             </Button>
           </Row>
         </Col>
