@@ -22,6 +22,7 @@ import { Post } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
+import useBreadcrumb from '../../core/hooks/useBreadcrumb';
 import usePageTitle from '../../core/hooks/usePageTitle';
 import usePosts from '../../core/hooks/usePosts';
 import useUser from '../../core/hooks/useUser';
@@ -30,11 +31,14 @@ import NotFoundError from '../components/NotFoundError';
 
 export default function UserDetailsView() {
   usePageTitle('Detalhes do utilizador');
+
   const params = useParams<{ id: string }>();
   const [page, setPage] = useState(0);
   const { lg } = useBreakpoint();
 
   const { user, fetchUser, notFound, toggleUserStatus } = useUser();
+
+  useBreadcrumb(`Usuários/${user?.name || 'Detalhes'}`);
 
   const {
     fetchUserPosts,

@@ -2,11 +2,8 @@ import { Card, notification, Skeleton } from 'antd';
 import { User, UserService } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useCallback, useEffect } from 'react';
-import {
-  Navigate,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import useBreadcrumb from '../../core/hooks/useBreadcrumb';
 import usePageTitle from '../../core/hooks/usePageTitle';
 import useUser from '../../core/hooks/useUser';
 import NotFoundError from '../components/NotFoundError';
@@ -20,25 +17,22 @@ export default function UserEditView() {
 
   const { user, fetchUser, notFound } = useUser();
 
+  useBreadcrumb(`Usuários/Edição`);
+
   useEffect(() => {
-    if (!isNaN(Number(params.id)))
-      fetchUser(Number(params.id));
+    if (!isNaN(Number(params.id))) fetchUser(Number(params.id));
   }, [fetchUser, params.id]);
 
-  const transformUserData = useCallback(
-    (user: User.Detailed) => {
-      return {
-        ...user,
-        createdAt: moment(user.createdAt),
-        updatedAt: moment(user.updatedAt),
-        birthdate: moment(user.birthdate),
-      };
-    },
-    []
-  );
+  const transformUserData = useCallback((user: User.Detailed) => {
+    return {
+      ...user,
+      createdAt: moment(user.createdAt),
+      updatedAt: moment(user.updatedAt),
+      birthdate: moment(user.birthdate),
+    };
+  }, []);
 
-  if (isNaN(Number(params.id)))
-    return <Navigate to='/users' replace={true} />;
+  if (isNaN(Number(params.id))) return <Navigate to='/users' replace={true} />;
 
   if (notFound)
     return (
@@ -52,10 +46,7 @@ export default function UserEditView() {
     );
 
   async function handleUserUpdate(user: User.Input) {
-    await UserService.updateExistingUser(
-      Number(params.id),
-      user
-    ).then(() => {
+    await UserService.updateExistingUser(Number(params.id), user).then(() => {
       navigate('/users');
       notification.success({
         message: 'Usuário atualizado com sucesso',
@@ -67,10 +58,7 @@ export default function UserEditView() {
 
   return (
     <>
-      <UserForm
-        onUpdate={handleUserUpdate}
-        user={transformUserData(user)}
-      />
+      <UserForm onUpdate={handleUserUpdate} user={transformUserData(user)} />
     </>
   );
 }

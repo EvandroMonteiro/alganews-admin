@@ -18,11 +18,14 @@ import { Payment } from 'goodvandro-alganews-sdk';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import useBreadcrumb from '../../core/hooks/useBreadcrumb';
 import usePayments from '../../core/hooks/usePayments';
 import DoubleConfirm from '../components/DoubleConfirm';
 import Forbidden from '../components/Forbidden';
 
 export default function PaymentListView() {
+  useBreadcrumb('Pagamentos/Consulta');
+
   const { xs } = useBreakpoint();
   const {
     payments,
