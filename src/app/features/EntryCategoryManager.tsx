@@ -10,16 +10,23 @@ import {
 } from 'antd';
 import { CashFlow } from 'goodvandro-alganews-sdk';
 import { useEffect } from 'react';
-import { DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  CheckCircleOutlined,
+  ReloadOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 import useEntriesCategories from '../../core/hooks/useEntriesCategories';
 import Modal from 'antd/lib/modal/Modal';
 import { useState } from 'react';
 import { useCallback } from 'react';
 import Forbidden from '../components/Forbidden';
+import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 
 export default function EntryCategoryManager(props: {
   type: 'EXPENSE' | 'REVENUE';
 }) {
+  const { xs } = useBreakpoint();
   const { expenses, fetchCategories, fetching, revenues, deleteCategory } =
     useEntriesCategories();
 
@@ -62,8 +69,16 @@ export default function EntryCategoryManager(props: {
         />
       </Modal>
       <Row justify={'space-between'} style={{ marginBottom: 16 }}>
-        <Button onClick={fetchCategories}>Atualizar categorias</Button>
-        <Button onClick={openCreationModal}>Adicionar categoria</Button>
+        <Button onClick={fetchCategories} icon={<ReloadOutlined />}>
+          {xs ? 'Atualizar' : 'Atualizar categorias'}
+        </Button>
+        <Button
+          onClick={openCreationModal}
+          icon={<PlusCircleOutlined />}
+          type={'primary'}
+        >
+          {xs ? 'Adicionar' : 'Adicionar categoria'}
+        </Button>
       </Row>
       <Table<CashFlow.CategorySummary>
         size='small'
