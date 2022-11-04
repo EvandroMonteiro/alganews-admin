@@ -33,7 +33,7 @@ Service.setResponseInterceptors(
 
       // caso algum dos dados não exista, redireciona para a tela de login
       if (!refreshToken || !codeVerifier) {
-        window.alert('#TODO: IMPLEMENTAR LOGOUT');
+        AuthService.imperativelySendToLogout();
         return;
       }
 

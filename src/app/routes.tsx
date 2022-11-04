@@ -1,11 +1,12 @@
 import { message, notification } from 'antd';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
 import jwtDecode from 'jwt-decode';
-import { useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo } from 'react';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Authentication } from '../auth/Auth';
 import AuthService from '../auth/Authorization.service';
 import useAuth from '../core/hooks/useAuth';
+import GlobalLoading from './components/GlobalLoading';
 import CashFlowExpensesView from './views/CashFlowExpenses.view';
 import CashFlowRevenuesView from './views/CashFlowRevenues.view';
 import HomeView from './views/Home.view';
@@ -19,8 +20,9 @@ import UserListView from './views/UserList.view';
 
 export default function AppRoutes() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { fetchUser } = useAuth();
+  const { fetchUser, user } = useAuth();
 
   useEffect(() => {
     window.onunhandledrejection = ({ reason }) => {
@@ -71,11 +73,12 @@ export default function AppRoutes() {
           notification.error({
             message: 'Código não foi informado',
           });
+          AuthService.imperativelySendToLoginScreen();
           return;
         }
 
         if (!codeVerifier) {
-          // necessário fazer logout
+          AuthService.imperativelySendToLogout();
           return;
         }
 
@@ -106,6 +109,13 @@ export default function AppRoutes() {
 
     identify();
   }, [fetchUser, navigate]);
+
+  const isAuthorizationRoute = useMemo(
+    () => location.pathname === '/authorize',
+    [location.pathname]
+  );
+
+  if (isAuthorizationRoute || !user) return <GlobalLoading />;
 
   return (
     <Routes>
