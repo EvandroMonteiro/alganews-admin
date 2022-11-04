@@ -54,6 +54,6 @@ Service.setResponseInterceptors(
       return axios(originalRequest);
     }
 
-    throw error;
+    throw error; // Promise.reject(error);
   }
 );
