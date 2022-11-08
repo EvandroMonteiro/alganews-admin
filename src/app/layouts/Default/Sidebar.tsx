@@ -3,11 +3,11 @@ import {
   FallOutlined,
   HomeOutlined,
   LaptopOutlined,
+  MenuOutlined,
   PlusCircleOutlined,
   RiseOutlined,
   TableOutlined,
   UserOutlined,
-  MenuOutlined,
 } from '@ant-design/icons';
 import {
   Button,
