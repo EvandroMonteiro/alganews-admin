@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User, UserService } from 'goodvandro-alganews-sdk';
+import AuthService from '../../auth/Authorization.service';
 
 type PA<T> = PayloadAction<T>;
 
@@ -18,6 +19,12 @@ export const fetchUser = createAsyncThunk(
   async (userId: number, { rejectWithValue, dispatch }) => {
     try {
       const user = await UserService.getDetailedUser(userId);
+
+      if (user.role !== 'MANAGER') {
+        window.alert('Você não tem permissão para acessar esse sistema');
+        AuthService.imperativelySendToLogout();
+        return;
+      }
       dispatch(storeUser(user));
     } catch (err) {
       return rejectWithValue({ ...err });
