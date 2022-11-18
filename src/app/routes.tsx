@@ -18,6 +18,8 @@ import UserDetailsView from './views/UserDetails.view';
 import UserEditView from './views/UserEdit.view';
 import UserListView from './views/UserList.view';
 
+const APP_BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export default function AppRoutes() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,7 +89,7 @@ export default function AppRoutes() {
           await AuthService.getFirstAccessToken({
             code,
             codeVerifier,
-            redirectUri: 'http://localhost:3000/authorize',
+            redirectUri: `${APP_BASE_URL}/authorize `,
           });
 
         AuthService.setAccessToken(access_token);
