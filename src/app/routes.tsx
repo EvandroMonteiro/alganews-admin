@@ -1,22 +1,31 @@
 import { message, notification } from 'antd';
 import CustomError from 'goodvandro-alganews-sdk/dist/CustomError';
 import jwtDecode from 'jwt-decode';
-import { useEffect, useMemo } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Authentication } from '../auth/Auth';
 import AuthService from '../auth/Authorization.service';
 import useAuth from '../core/hooks/useAuth';
 import GlobalLoading from './components/GlobalLoading';
-import CashFlowExpensesView from './views/CashFlowExpenses.view';
-import CashFlowRevenuesView from './views/CashFlowRevenues.view';
-import HomeView from './views/Home.view';
-import PaymentCreateView from './views/PaymentCreate.view';
-import PaymentDetailsView from './views/PaymentDetails.view';
-import PaymentListView from './views/PaymentList.view';
-import UserCreateView from './views/UserCreate.view';
-import UserDetailsView from './views/UserDetails.view';
-import UserEditView from './views/UserEdit.view';
-import UserListView from './views/UserList.view';
+
+const CashFlowExpensesView = React.lazy(
+  () => import('./views/CashFlowExpenses.view')
+);
+const CashFlowRevenuesView = React.lazy(
+  () => import('./views/CashFlowRevenues.view')
+);
+const HomeView = React.lazy(() => import('./views/Home.view'));
+const PaymentCreateView = React.lazy(
+  () => import('./views/PaymentCreate.view')
+);
+const PaymentDetailsView = React.lazy(
+  () => import('./views/PaymentDetails.view')
+);
+const PaymentListView = React.lazy(() => import('./views/PaymentList.view'));
+const UserCreateView = React.lazy(() => import('./views/UserCreate.view'));
+const UserDetailsView = React.lazy(() => import('./views/UserDetails.view'));
+const UserEditView = React.lazy(() => import('./views/UserEdit.view'));
+const UserListView = React.lazy(() => import('./views/UserList.view'));
 
 const APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -120,17 +129,25 @@ export default function AppRoutes() {
   if (isAuthorizationRoute || !user) return <GlobalLoading />;
 
   return (
-    <Routes>
-      <Route path={'/'} element={<HomeView />} />
-      <Route path={'/users'} element={<UserListView />} />
-      <Route path={'/users/create'} element={<UserCreateView />} />
-      <Route path={'/users/edit/:id'} element={<UserEditView />} />
-      <Route path={'/users/:id'} element={<UserDetailsView />} />
-      <Route path={'/payments'} element={<PaymentListView />} />
-      <Route path={'/payments/create'} element={<PaymentCreateView />} />
-      <Route path={'/payments/:id'} element={<PaymentDetailsView />} />
-      <Route path={'/cash-flow/expenses'} element={<CashFlowExpensesView />} />
-      <Route path={'/cash-flow/revenues'} element={<CashFlowRevenuesView />} />
-    </Routes>
+    <Suspense fallback={<GlobalLoading />}>
+      <Routes>
+        <Route path={'/'} element={<HomeView />} />
+        <Route path={'/users'} element={<UserListView />} />
+        <Route path={'/users/create'} element={<UserCreateView />} />
+        <Route path={'/users/edit/:id'} element={<UserEditView />} />
+        <Route path={'/users/:id'} element={<UserDetailsView />} />
+        <Route path={'/payments'} element={<PaymentListView />} />
+        <Route path={'/payments/create'} element={<PaymentCreateView />} />
+        <Route path={'/payments/:id'} element={<PaymentDetailsView />} />
+        <Route
+          path={'/cash-flow/expenses'}
+          element={<CashFlowExpensesView />}
+        />
+        <Route
+          path={'/cash-flow/revenues'}
+          element={<CashFlowRevenuesView />}
+        />
+      </Routes>
+    </Suspense>
   );
 }
