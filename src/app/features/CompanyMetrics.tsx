@@ -1,14 +1,11 @@
 import { Area } from '@ant-design/charts';
 import { MetricService } from 'goodvandro-alganews-sdk';
 import { format } from 'date-fns';
-import { LockFilled } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import transformDataIntoAntdChart from '../../core/utils/transformDataIntoAntdChart';
 import { ptBR } from 'date-fns/locale';
 import parseISO from 'date-fns/parseISO';
 import { ForbiddenError } from 'goodvandro-alganews-sdk/dist/errors';
-import Card from 'antd/lib/card/Card';
-import { Space, Typography } from 'antd';
 import Forbidden from '../components/Forbidden';
 
 export default function CompanyMetrics() {
