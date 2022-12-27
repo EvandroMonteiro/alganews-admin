@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["alganews", "antd", "Popconfirm"]
+  "cSpell.words": ["alganews", "antd", "Popconfirm"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
