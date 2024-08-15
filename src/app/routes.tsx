@@ -98,7 +98,7 @@ export default function AppRoutes() {
           await AuthService.getFirstAccessToken({
             code,
             codeVerifier,
-            redirectUri: `${APP_BASE_URL}/authorize `,
+            redirectUri: `${APP_BASE_URL}/authorize`,
           });
 
         AuthService.setAccessToken(access_token);
